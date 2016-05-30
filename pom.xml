@@ -8,6 +8,12 @@
     <artifactId>metadata-validator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
+    <scm>
+        <developerConnection>
+            scm:git:[fetch=]http://github.com/difi/idporten-saml-metadata-validator
+        </developerConnection>
+    </scm>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
