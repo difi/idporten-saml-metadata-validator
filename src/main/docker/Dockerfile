@@ -6,4 +6,4 @@ RUN sh -c 'touch /metadata-validator.jar'
 
 EXPOSE 9000
 
-ENTRYPOINT ["java", "-jar", "/metadata-validator.jardo"]
+ENTRYPOINT ["java", "-jar", "/metadata-validator.jar"]
