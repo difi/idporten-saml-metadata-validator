@@ -1,6 +1,6 @@
-FROM frolvlad/alpine-oraclejdk8:slim
+FROM java:openjdk-8
 
-ADD metadata-validator-1.0.0-SNAPSHOT.jar metadata-validator.jar
+ADD idporten-saml-metadata-validator-1.0.0-SNAPSHOT.jar metadata-validator.jar
 
 RUN sh -c 'touch /metadata-validator.jar'
 

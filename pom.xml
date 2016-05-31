@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>no.difi.kontaktinfo</groupId>
-    <artifactId>metadata-validator</artifactId>
+    <artifactId>idporten-saml-metadata-validator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <scm>
@@ -24,8 +24,8 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <docker.image.prefix>difi</docker.image.prefix>
-        <dockerplugin.version>0.4.9</dockerplugin.version>
+        <docker.image.prefix>docker-registry.dmz.local</docker.image.prefix>
+        <dockerplugin.version>0.4.10</dockerplugin.version>
     </properties>
 
     <dependencies>

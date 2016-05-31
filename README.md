@@ -1,5 +1,5 @@
 # First time install and run
-First of all, git, java and maven must be installed on your machine. When you have made sure of this, you can clone the project and run
+Build project with
 `mvn clean install`
 
 Application can be started with
@@ -12,11 +12,11 @@ to the address line in your browser. This should print _biig *hello* world_
 ## Building and running with docker
 Assuming you have installed docker...
 
-Run maven docker plugin
+Build docker image
 `mvn package docker:build`
 
 Starting docker image
-`docker run --name meta -d -p 9000:9000 -t difi/metadata-validator`
+`docker run --name meta -d -p 9000:9000 -t docker-registry.dmz.local/idporten-saml-metadata-validator`
 
 Open a browser and write
 `<ip-to-docker>:9000`
