@@ -1,6 +1,9 @@
-FROM java:openjdk-8
+FROM alpine:3.3
 
-ADD idporten-saml-metadata-validator-1.0.0-SNAPSHOT.jar metadata-validator.jar
+RUN apk --update add openjdk8-jre
+CMD ["/usr/bin/java", "-version"]
+
+COPY idporten-saml-metadata-validator-1.0.0-SNAPSHOT.jar metadata-validator.jar
 
 RUN sh -c 'touch /metadata-validator.jar'
 
