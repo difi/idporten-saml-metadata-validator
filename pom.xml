@@ -25,7 +25,7 @@
     <properties>
         <java.version>1.8</java.version>
         <docker.image.prefix>docker-registry.dmz.local</docker.image.prefix>
-        <dockerplugin.version>0.4.10</dockerplugin.version>
+        <fabric8.version>3.0.0-M3</fabric8.version>
     </properties>
 
     <dependencies>
@@ -45,24 +45,53 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/target</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/docker</directory>
+                                    <includes>
+                                        <include>Dockerfile</include>
+                                        <include>.maven-dockerignore</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
-                <groupId>com.spotify</groupId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${dockerplugin.version}</version>
+                <version>0.15.3</version>
                 <configuration>
-                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
-                    <dockerDirectory>src/main/docker</dockerDirectory>
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
+                    <images>
+                        <image>
+                            <alias>meta-validator</alias>
+                            <name>${docker.image.prefix}/${project.artifactId}:${project.version}</name>
+                            <build>
+                                <assembly>
+                                    <dockerFileDir>${project.basedir}/target</dockerFileDir>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
                 </configuration>
             </plugin>
         </plugins>

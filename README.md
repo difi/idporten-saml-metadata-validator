@@ -21,4 +21,4 @@ Starting docker image
 Open a browser and write
 `<ip-to-docker>:9000`
 
-To find your docker machine's IP address, type `env | grep DOCKER` and use IP address in `DOCKER_HOST`
+To find your docker machine's IP address, type `env | grep DOCKER_HOST`

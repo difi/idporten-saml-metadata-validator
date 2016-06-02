@@ -1,0 +1,9 @@
+classes/
+docker/
+generated-sources/
+generated-test-sources/
+maven-archiver/
+maven-status/
+${project.build.finalName}/
+surefire-reports/
+test-classes/
