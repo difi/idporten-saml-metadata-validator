@@ -16,7 +16,7 @@ Build docker image
 `mvn package docker:build`
 
 Starting docker image
-`docker run --name meta -d -p 9000:9000 -t docker-registry.dmz.local/idporten-saml-metadata-validator`
+`mvn docker:run`
 
 Open a browser and write
 `<ip-to-docker>:9000`
