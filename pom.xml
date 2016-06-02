@@ -90,9 +90,7 @@
                                     <tag>latest</tag>
                                     <tag>${project.version}</tag>
                                 </tags>
-                                <assembly>
-                                    <dockerFileDir>${project.basedir}/target</dockerFileDir>
-                                </assembly>
+                                <dockerFileDir>${project.basedir}/target</dockerFileDir>
                             </build>
                             <run>
                                 <ports>
