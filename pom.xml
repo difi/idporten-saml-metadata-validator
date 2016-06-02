@@ -74,7 +74,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
+            </plugin>
 
             <plugin>
                 <groupId>io.fabric8</groupId>
@@ -86,10 +86,22 @@
                             <alias>meta-validator</alias>
                             <name>${docker.image.prefix}/${project.artifactId}:${project.version}</name>
                             <build>
+                                <tags>
+                                    <tag>latest</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
                                 <assembly>
                                     <dockerFileDir>${project.basedir}/target</dockerFileDir>
                                 </assembly>
                             </build>
+                            <run>
+                                <ports>
+                                    <port>9000:9000</port>
+                                </ports>
+                                <env>
+                                    <APP_NAME>${project.build.finalName}</APP_NAME>
+                                </env>
+                            </run>
                         </image>
                     </images>
                 </configuration>
