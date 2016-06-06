@@ -22,3 +22,10 @@ Open a browser and write
 `<ip-to-docker>:9000`
 
 To find your docker machine's IP address, type `env | grep DOCKER_HOST`
+
+Stopping docker image
+`mvn docker:stop`
+
+Removing docker image
+`mvn docker:remove`
+NB! This does not remove the image from disk. To see images, write `docker images`. These can be removed with `docker rmi <id of image>`.
