@@ -8,24 +8,20 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.DataBinder;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class MetadataControllerTest {
-    public static final String ROOT_TEMPLATE = "/";
+    private static final String ROOT_TEMPLATE = "/";
 
     private MockMvc mvc;
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mvc = MockMvcBuilders.standaloneSetup(new MetadataController()).build();
     }
 
