@@ -5,7 +5,7 @@
     <div class="container">
         <div class="page-header header-frame">
             <h1>
-                <img alt=" " src="/images/eid-logo.gif" style="padding-right: 10px; vertical-align: bottom;">
+                <img class="head-logo" alt=" " src="/images/eid-logo.gif">
                 SAML Metadata Validator
             </h1>
         </div>
@@ -16,21 +16,23 @@
                     <span>Last opp fil</span>
                     <span id="filename" class="section-container-filename">Ingen fil valgt</span>
                     <div class="button-group">
-                        <input type="button" name="file" value="Velg fil"/>
-                        <input id="validate" type="submit" value="Valider"/>
+                        <label id="file-picker-overlay" for="file-picker" class="file-selector-overlay">Velg fil</label>
+                        <input id="file-picker" type="file" name="file" accept=".xml" onchange="setFilename()"/>
+                        <input id="validate" type="submit" value="Valider" disabled onclick="showResult()"/>
                     </div>
                 </div>
             </form>
         </div>
 
-        <div id="result-panel" class="panel" style="visibility: hidden">
-            <div class="panel-heading">Resultat</div>
-            <div class="panel-body">
-                <c:out value="${message}"/>
+        <c:if test="${showpanel==true}">
+            <div id="result-panel" class="panel">
+                <div class="panel-heading">Resultat</div>
+                <div class="panel-body">
+                    <c:out value="${message}"/>
+                </div>
+                <div class="panel-footer">Footer</div>
             </div>
-            <div class="panel-footer">Footer</div>
-        </div>
-
+        </c:if>
     </div>
 </div>
 

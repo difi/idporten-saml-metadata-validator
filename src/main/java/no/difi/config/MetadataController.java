@@ -26,13 +26,13 @@ public class MetadataController {
     public String provideUploadInfo(Model model) {
         File rootFolder = new File(Application.ROOT);
         List<String> fileNames = Arrays.stream(rootFolder.listFiles())
-                .map(f -> f.getName())
+                .map(File::getName)
                 .collect(Collectors.toList());
 
         model.addAttribute("files",
                 Arrays.stream(rootFolder.listFiles())
                         .sorted(Comparator.comparingLong(f -> -1 * f.lastModified()))
-                        .map(f -> f.getName())
+                        .map(File::getName)
                         .collect(Collectors.toList())
         );
 
@@ -53,7 +53,9 @@ public class MetadataController {
                 //TODO: Log stacktrace to file
                 redirectAttributes.addFlashAttribute("message", "Feil under streaming av fil.");
             }
-            redirectAttributes.addFlashAttribute("message", "Filen er lastet opp");
+            redirectAttributes
+                    .addFlashAttribute("message", "Filen er lastet opp")
+                    .addFlashAttribute("showpanel", true);
         }
 
         return "redirect:/";
