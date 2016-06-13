@@ -1,7 +1,9 @@
 package no.difi.config;
 
+import no.difi.filevalidator.Validator;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -12,17 +14,20 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.io.IOException;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class MetadataControllerTest {
     private static final String ROOT_TEMPLATE = "/";
 
     private MockMvc mvc;
-
+    @Mock
+    private Validator validatorMock;
 
     @Before
     public void setUp() {
-        mvc = MockMvcBuilders.standaloneSetup(new MetadataController()).build();
+        initMocks(this);
+        mvc = MockMvcBuilders.standaloneSetup(new MetadataController(validatorMock)).build();
     }
 
     @Test

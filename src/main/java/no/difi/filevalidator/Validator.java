@@ -1,5 +1,8 @@
 package no.difi.filevalidator;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -10,28 +13,34 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 
-
+@Component
 public class Validator {
+    private final Environment environment;
 
-    public boolean validate(InputStream stream, RedirectAttributes redirectAttributes){
+    @Autowired
+    public Validator(final Environment environment){
+        this.environment = environment;
+    }
+
+    public boolean validate(final InputStream stream, final RedirectAttributes redirectAttributes){
         if(!validateXML(stream, redirectAttributes)){
-            redirectAttributes.addFlashAttribute("message", "Filen er ikke gyldig xml");
+            redirectAttributes.addFlashAttribute("message", environment.getProperty("validation.error.xml"));
             return false;
         }
-        redirectAttributes.addFlashAttribute("message", "Filen er gyldig xml");
+        redirectAttributes.addFlashAttribute("message", environment.getProperty("validation.ok"));
         return true;
     }
 
-    private boolean validateXML(InputStream stream, RedirectAttributes redirectAttributes) {
+    private boolean validateXML(final InputStream stream, final RedirectAttributes redirectAttributes) {
 
-        if(stream==null){
+        if(stream == null){
             return false;
         }
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
 
-        DocumentBuilder builder = null;
+        DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {

@@ -1,6 +1,7 @@
 package no.difi.config;
 
 import no.difi.filevalidator.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,9 +24,11 @@ class MetadataController {
     private final Validator validator;
     private InputStream stream;
 
-    public MetadataController(){
-        validator = new Validator();
+    @Autowired
+    public MetadataController(Validator validator){
+        this.validator = validator;
     }
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String provideUploadInfo(Model model) {
         File rootFolder = new File(Application.ROOT);

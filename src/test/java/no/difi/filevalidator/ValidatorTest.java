@@ -1,8 +1,12 @@
 package no.difi.filevalidator;
 
-import org.junit.Before;
+import no.difi.config.MetadataConfig;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
@@ -10,18 +14,47 @@ import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {MetadataConfig.class})
 public class ValidatorTest {
-
+    @Autowired
     private Validator validator;
-
-    @Before
-    public void setUp() {
-        validator = new Validator();
-    }
 
     @Test
     public void test_that_validate_returns_true_when_file_is_valid() throws Exception {
-        String validFile = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+        MockMultipartFile fileMock = new MockMultipartFile("test", createValidXml().getBytes());
+        InputStream streamMock = fileMock.getInputStream();
+        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+
+        boolean valid = validator.validate(streamMock, redirectAttributes);
+
+        assertTrue(valid);
+    }
+
+    @Test
+    public void test_that_validate_writes_invalid_message_and_returns_false_when_validating_a_file_with_invalid_xml_syntax() throws Exception{
+        MockMultipartFile fileMock = new MockMultipartFile("test", createInvalidXml().getBytes());
+        InputStream streamMock = fileMock.getInputStream();
+        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+
+        Boolean valid = validator.validate(streamMock, redirectAttributes);
+
+        assertEquals("Filen er ikke gyldig xml", redirectAttributes.getFlashAttributes().get("message"));
+        assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
+        assertFalse(valid);
+    }
+
+    private String createInvalidXml() {
+        return "note>" +
+                "<to>Tove</to>" +
+                "<from>Jani</from>" +
+                "<heading>Reminder</heading>" +
+                "<body>Don't forget me this weekend!</body>" +
+                "</note>";
+    }
+
+    private static String createValidXml() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<EntityDescriptor entityID=\"testsp\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n" +
                 "    <SPSSODescriptor AuthnRequestsSigned=\"true\" WantAssertionsSigned=\"true\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n" +
                 "        <KeyDescriptor use=\"signing\">\n" +
@@ -71,30 +104,6 @@ public class ValidatorTest {
                 "        <AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/assertionconsumer\"/>\n" +
                 "    </SPSSODescriptor>\n" +
                 "</EntityDescriptor>";
-
-        MockMultipartFile fileMock = new MockMultipartFile("test", validFile.getBytes());
-        InputStream streamMock = fileMock.getInputStream();
-        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
-        boolean valid = validator.validate(streamMock, redirectAttributes);
-        assertTrue(valid);
     }
 
-    //TODO: Don't write stacktrace to stdout
-    @Test
-    public void test_that_validate_writes_invalid_message_and_returns_false_when_validating_a_file_with_invalid_xml_syntax() throws Exception{
-        String inValidXML = "note>" +
-                "<to>Tove</to>" +
-                "<from>Jani</from>" +
-                "<heading>Reminder</heading>" +
-                "<body>Don't forget me this weekend!</body>" +
-                "</note>";
-
-        MockMultipartFile fileMock = new MockMultipartFile("test", inValidXML.getBytes());
-        InputStream streamMock = fileMock.getInputStream();
-        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
-        Boolean valid = validator.validate(streamMock, redirectAttributes);
-        assertEquals(redirectAttributes.getFlashAttributes().get("message"), "Filen er ikke gyldig xml");
-        assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
-        assertFalse(valid);
-    }
 }
