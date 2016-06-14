@@ -1,6 +1,7 @@
 package no.difi.filevalidator;
 
 import no.difi.config.MetadataConfig;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +21,62 @@ public class ValidatorTest {
     @Autowired
     private Validator validator;
 
-    @Test
-    public void test_that_validate_returns_true_when_file_is_valid() throws Exception {
-        MockMultipartFile fileMock = new MockMultipartFile("test", createValidXml().getBytes());
-        InputStream streamMock = fileMock.getInputStream();
-        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+    private InputStream invalidXMLStreamMock;
+    private RedirectAttributes redirectAttributes;
+    private InputStream streamValidMock;
 
-        boolean valid = validator.validate(streamMock, redirectAttributes);
+    @Before
+    public void setUp() throws Exception {
+        makeInvalidXMLMock();
+        makeValidFileMock();
+        redirectAttributes = new RedirectAttributesModelMap();
+    }
+
+    private void makeValidFileMock() throws Exception {
+        MockMultipartFile fileMock = new MockMultipartFile("test", createValidXml().getBytes());
+        streamValidMock = fileMock.getInputStream();
+    }
+
+    private void makeInvalidXMLMock() throws Exception {
+        MockMultipartFile fileMock = new MockMultipartFile("test", createInvalidXml().getBytes());
+        invalidXMLStreamMock = fileMock.getInputStream();
+    }
+
+    @Test
+    public void should_return_true_when_file_is_valid() throws Exception {
+        boolean valid = validator.validate(streamValidMock, redirectAttributes);
 
         assertTrue(valid);
     }
 
     @Test
-    public void test_that_validate_writes_invalid_message_and_returns_false_when_validating_a_file_with_invalid_xml_syntax() throws Exception{
-        MockMultipartFile fileMock = new MockMultipartFile("test", createInvalidXml().getBytes());
-        InputStream streamMock = fileMock.getInputStream();
-        RedirectAttributes redirectAttributes = new RedirectAttributesModelMap();
+    public void should_not_write_error_message_when_file_is_valid() throws Exception {
+        validator.validate(streamValidMock, redirectAttributes);
 
-        Boolean valid = validator.validate(streamMock, redirectAttributes);
+        assertNull(redirectAttributes.getFlashAttributes().get("error"));
+    }
 
-        assertEquals("Filen er ikke gyldig xml", redirectAttributes.getFlashAttributes().get("message"));
-        assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
+    @Test
+    public void should_return_false_when_file_has_invalid_xml_syntax() throws Exception{
+        Boolean valid = validator.validate(invalidXMLStreamMock, redirectAttributes);
+
         assertFalse(valid);
+    }
+
+    @Test
+    public void should_give_invalid_xml_message_when_file_has_invalid_xml_syntax() throws Exception{
+        String invalidXML = "Filen er ikke gyldig xml";
+
+        validator.validate(invalidXMLStreamMock, redirectAttributes);
+
+        assertEquals(invalidXML, redirectAttributes.getFlashAttributes().get("message"));
+    }
+
+    @Test
+    public void should_write_error_when_file_has_invalid_xml_syntax(){
+        validator.validate(invalidXMLStreamMock, redirectAttributes);
+
+        assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
     }
 
     private String createInvalidXml() {

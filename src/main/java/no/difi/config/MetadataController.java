@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-class MetadataController {
+public class MetadataController {
 
     private final Validator validator;
     private InputStream stream;
