@@ -29,67 +29,52 @@ public class ValidatorTest {
     @Autowired
     private Validator validator;
 
-    private InputStream invalidXMLStreamMock;
     private RedirectAttributes redirectAttributes;
-    private InputStream streamValidMock;
 
     @Spy
     InputStream inputStreamSpyMock = new ByteArrayInputStream(createValidXml().getBytes());
 
     @Before
     public void setUp() throws Exception {
-        makeInvalidXMLMock();
-        makeValidFileMock();
         redirectAttributes = new RedirectAttributesModelMap();
     }
 
-    private void makeValidFileMock() throws Exception {
-        MockMultipartFile fileMock = new MockMultipartFile("test", createValidXml().getBytes());
-        streamValidMock = fileMock.getInputStream();
-    }
-
-    private void makeInvalidXMLMock() throws Exception {
-        MockMultipartFile fileMock = new MockMultipartFile("test", createInvalidXml().getBytes());
-        invalidXMLStreamMock = fileMock.getInputStream();
-    }
-
     @Test
-    public void should_return_true_when_file_is_valid() {
-        boolean valid = validator.validate(streamValidMock, redirectAttributes);
+    public void should_return_true_when_file_is_valid() throws Exception {
+        boolean valid = validator.validate(createValidMultipartFileXml(), redirectAttributes);
 
         assertTrue(valid);
     }
 
     @Test
-    public void should_not_write_error_message_when_file_is_valid() {
-        validator.validate(streamValidMock, redirectAttributes);
+    public void should_not_write_error_message_when_file_is_valid() throws Exception {
+        validator.validate(createValidMultipartFileXml(), redirectAttributes);
 
         assertNull(redirectAttributes.getFlashAttributes().get("error"));
     }
 
     @Test
-    public void should_return_false_when_file_has_invalid_xml_syntax() {
-        Boolean valid = validator.validate(invalidXMLStreamMock, redirectAttributes);
+    public void should_return_false_when_file_has_invalid_xml_syntax() throws Exception {
+        Boolean valid = validator.validate(createInvalidMultipartFileXml(), redirectAttributes);
 
         assertFalse(valid);
     }
 
     @Test
-    public void should_give_invalid_xml_message_when_file_has_invalid_xml_syntax() {
+    public void should_give_invalid_xml_message_when_file_has_invalid_xml_syntax() throws Exception {
         String invalidXML = "Filen er ikke gyldig xml";
 
-        validator.validate(invalidXMLStreamMock, redirectAttributes);
+        validator.validate(createInvalidMultipartFileXml(), redirectAttributes);
 
         assertEquals(invalidXML, redirectAttributes.getFlashAttributes().get("message"));
     }
 
     @Test
-    public void should_write_error_when_file_has_invalid_xml_syntax(){
-        validator.validate(invalidXMLStreamMock, redirectAttributes);
+    public void should_write_error_when_file_has_invalid_xml_syntax() throws Exception {
+        validator.validate(createInvalidMultipartFileXml(), redirectAttributes);
 
         assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
     }
-
 
     @Test
     public void should_write_error_when_io_exception_is_thrown() throws IOException{
@@ -101,7 +86,17 @@ public class ValidatorTest {
         assertEquals(errorMessage, redirectAttributes.getFlashAttributes().get("error"));
     }
 
-    private String createInvalidXml() {
+    private static InputStream createValidMultipartFileXml() throws Exception {
+        MockMultipartFile fileMock = new MockMultipartFile("test", createValidXml().getBytes());
+        return fileMock.getInputStream();
+    }
+
+    private static InputStream createInvalidMultipartFileXml() throws Exception {
+        MockMultipartFile fileMock = new MockMultipartFile("test", createInvalidXml().getBytes());
+        return fileMock.getInputStream();
+    }
+
+    private static String createInvalidXml() {
         return "note>" +
                 "<to>Tove</to>" +
                 "<from>Jani</from>" +
