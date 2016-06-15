@@ -1,32 +1,33 @@
 package no.difi.config;
 
+import no.difi.filevalidator.Validator;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.DataBinder;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class MetadataControllerTest {
-    public static final String ROOT_TEMPLATE = "/";
+    private static final String ROOT_TEMPLATE = "/";
 
     private MockMvc mvc;
-
+    @Mock
+    private Validator validatorMock;
 
     @Before
-    public void setUp() throws Exception {
-        mvc = MockMvcBuilders.standaloneSetup(new MetadataController()).build();
+    public void setUp() {
+        initMocks(this);
+        mvc = MockMvcBuilders.standaloneSetup(new MetadataController(validatorMock)).build();
     }
 
     @Test
