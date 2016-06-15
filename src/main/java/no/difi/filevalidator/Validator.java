@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,11 +35,11 @@ public class Validator {
         if(stream == null){
             return false;
         }
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(false);
         factory.setNamespaceAware(true);
 
-        DocumentBuilder builder;
+        final DocumentBuilder builder;
         try {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
@@ -49,7 +48,7 @@ public class Validator {
             return false;
         }
         try {
-            Document document = builder.parse(stream);
+            builder.parse(stream);
             stream.close();
         } catch (SAXException e) {
             //TODO: Log stacktrace to file

@@ -4,6 +4,10 @@ import no.difi.config.MetadataConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
@@ -11,19 +15,26 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MetadataConfig.class})
 public class ValidatorTest {
+
     @Autowired
     private Validator validator;
 
     private InputStream invalidXMLStreamMock;
     private RedirectAttributes redirectAttributes;
     private InputStream streamValidMock;
+
+    @Spy
+    InputStream inputStreamSpyMock = new ByteArrayInputStream(createValidXml().getBytes());
 
     @Before
     public void setUp() throws Exception {
@@ -43,28 +54,28 @@ public class ValidatorTest {
     }
 
     @Test
-    public void should_return_true_when_file_is_valid() throws Exception {
+    public void should_return_true_when_file_is_valid() {
         boolean valid = validator.validate(streamValidMock, redirectAttributes);
 
         assertTrue(valid);
     }
 
     @Test
-    public void should_not_write_error_message_when_file_is_valid() throws Exception {
+    public void should_not_write_error_message_when_file_is_valid() {
         validator.validate(streamValidMock, redirectAttributes);
 
         assertNull(redirectAttributes.getFlashAttributes().get("error"));
     }
 
     @Test
-    public void should_return_false_when_file_has_invalid_xml_syntax() throws Exception{
+    public void should_return_false_when_file_has_invalid_xml_syntax() {
         Boolean valid = validator.validate(invalidXMLStreamMock, redirectAttributes);
 
         assertFalse(valid);
     }
 
     @Test
-    public void should_give_invalid_xml_message_when_file_has_invalid_xml_syntax() throws Exception{
+    public void should_give_invalid_xml_message_when_file_has_invalid_xml_syntax() {
         String invalidXML = "Filen er ikke gyldig xml";
 
         validator.validate(invalidXMLStreamMock, redirectAttributes);
@@ -77,6 +88,17 @@ public class ValidatorTest {
         validator.validate(invalidXMLStreamMock, redirectAttributes);
 
         assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
+    }
+
+
+    @Test
+    public void should_write_error_when_io_exception_is_thrown() throws IOException{
+        String errorMessage = "IO Exception was thrown";
+        PowerMockito.doThrow(new IOException(errorMessage)).when(inputStreamSpyMock).close();
+
+        validator.validate(inputStreamSpyMock, redirectAttributes);
+
+        assertEquals(errorMessage, redirectAttributes.getFlashAttributes().get("error"));
     }
 
     private String createInvalidXml() {
