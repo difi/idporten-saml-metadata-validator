@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" validUntil="2014-08-21T06:01:27Z" entityID="https://orafed.bergen.kommune.no/fed/sp">
+  <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" AuthnRequestsSigned="true" WantAssertionsSigned="true">
+    <md:KeyDescriptor use="signing">
+      <dsig:KeyInfo>
+        <dsig:X509Data>
+          <dsig:X509Certificate>MIIEvzCCA6egAwIBAgILA+6ivB/AhFv9RVowDQYJKoZIhvcNAQELBQAwSzELMAkG
+A1UEBhMCTk8xHTAbBgNVBAoMFEJ1eXBhc3MgQVMtOTgzMTYzMzI3MR0wGwYDVQQD
+DBRCdXlwYXNzIENsYXNzIDMgQ0EgMzAeFw0xNDA3MDcxMjU5MzVaFw0xNzA3MjIy
+MTU5MDBaMFMxCzAJBgNVBAYTAk5PMRcwFQYDVQQKDA5CRVJHRU4gS09NTVVORTEX
+MBUGA1UEAwwOQkVSR0VOIEtPTU1VTkUxEjAQBgNVBAUTCTk2NDMzODUzMTCCASIw
+DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL1Mct6LUoZfjxXiP2DAcjhJ7uja
+abPaC24Y2OPDOMzk/s2MmP8AccT53ZIqDW9hyryqvNybUrwoyRNwax7CFbtBIu88
+iSMrzE/37/g5JWELpUXvXAwNW6Wz5d90+P0GLlZDnAbRNJ6LxRnazyOG1UX5tkE4
+UkB1ZPPo1Pi+UFaz45BTmMOE0FQJRBrt8N3DWILF13aG27/SUPJtmJuKOAuCh4ds
+f388Pc9A1I8Jv2dyBTPVv/GZP0RFKlLMGvtdO4QOC8gx047Ynbt3ZUlL52hwn8aB
+0USlGqzFNKSkbZ8b4aumdiOiHUHVI2naA15tZ0qko03UetO+p9933/erLkkCAwEA
+AaOCAZowggGWMAkGA1UdEwQCMAAwHwYDVR0jBBgwFoAUzMP4B7ecbXpO9acrHQX5
+s0cckdEwHQYDVR0OBBYEFBFwvLTHr+FLknO8MrpHEdeirHMrMA4GA1UdDwEB/wQE
+AwIGQDAVBgNVHSAEDjAMMAoGCGCEQgEaAQMCMIGlBgNVHR8EgZ0wgZowL6AtoCuG
+KWh0dHA6Ly9jcmwuYnV5cGFzcy5uby9jcmwvQlBDbGFzczNDQTMuY3JsMGegZaBj
+hmFsZGFwOi8vbGRhcC5idXlwYXNzLm5vL2RjPUJ1eXBhc3MsZGM9Tk8sQ049QnV5
+cGFzcyUyMENsYXNzJTIwMyUyMENBJTIwMz9jZXJ0aWZpY2F0ZVJldm9jYXRpb25M
+aXN0MHoGCCsGAQUFBwEBBG4wbDAzBggrBgEFBQcwAYYnaHR0cDovL29jc3AuYnV5
+cGFzcy5uby9vY3NwL0JQQ2xhc3MzQ0EzMDUGCCsGAQUFBzAChilodHRwOi8vY3J0
+LmJ1eXBhc3Mubm8vY3J0L0JQQ2xhc3MzQ0EzLmNlcjANBgkqhkiG9w0BAQsFAAOC
+AQEAKWbODaTaPuEJG0jx1WvMvnybWIL/IQMhsNEfVoSez9aD4/ETLLzHGw6ENVgz
+drNtL8JjZpyGppaZ7AezKTVqI5mrW91L+REuue3xKdda4mfUkWgfMe8gPby5ffQ0
+UYNBIIEFST92lwYmpx4LG/uemzwtOa+fazpeFZiQdBDrWp2PL8ibVXCLHBByucfD
+vEGkcglKbsahPyaX91R/xCqWZdIqrqOEB43jQhw3q5Bck0mp0gMmK39xvm4Zfz6B
+04kBWgq5AsQCTH0QLCUP08uf0DLOy+w5exqoBtKjSVyQm/09R9NDzOP7hl+kicgh
+6Fs7qihskHPuTZkuTc9mQCz+eg==
+</dsig:X509Certificate>
+        </dsig:X509Data>
+      </dsig:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="encryption">
+      <dsig:KeyInfo>
+        <dsig:X509Data>
+          <dsig:X509Certificate>MIIEvzCCA6egAwIBAgILA+6h+O1IxmszGWAwDQYJKoZIhvcNAQELBQAwSzELMAkG
+A1UEBhMCTk8xHTAbBgNVBAoMFEJ1eXBhc3MgQVMtOTgzMTYzMzI3MR0wGwYDVQQD
+DBRCdXlwYXNzIENsYXNzIDMgQ0EgMzAeFw0xNDA3MDcxMjU5MzVaFw0xNzA3MjIy
+MTU5MDBaMFMxCzAJBgNVBAYTAk5PMRcwFQYDVQQKDA5CRVJHRU4gS09NTVVORTEX
+MBUGA1UEAwwOQkVSR0VOIEtPTU1VTkUxEjAQBgNVBAUTCTk2NDMzODUzMTCCASIw
+DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJamS/HfEZo1QNwQtldZ6GSSCK/d
+88OkOZhz9fCo3zFmCu+1V+I7xcu9/j9YhCcILRmFsG4jstx7DPXJJUNbfnLsU2a1
+W+LQZZWQZJb+LnSt1FkBpbhizwOHUjmlxykN+7ZACph6lIiaWYG+rFttIjaP7tSg
+lucPbWrBU2BddWkgYnNsaBdwjFQCIzMcZnkF/GYepNXvUnJNh6+rTSFoH07WefLK
+haoHo4oGlxkSEJhc5oNwztvymfKH8lUAoaroPU3dgIj0EDqjg3JKqoc5Q8lM4LNo
+iBE0g2eaQAN7k5a8+h/IidzWzyGIxmcdPZdtKPzsJaeeVbebJXF3X7YM+9UCAwEA
+AaOCAZowggGWMAkGA1UdEwQCMAAwHwYDVR0jBBgwFoAUzMP4B7ecbXpO9acrHQX5
+s0cckdEwHQYDVR0OBBYEFJfSHNeOGXkwjIT03hWCQsp423xeMA4GA1UdDwEB/wQE
+AwIEsDAVBgNVHSAEDjAMMAoGCGCEQgEaAQMCMIGlBgNVHR8EgZ0wgZowL6AtoCuG
+KWh0dHA6Ly9jcmwuYnV5cGFzcy5uby9jcmwvQlBDbGFzczNDQTMuY3JsMGegZaBj
+hmFsZGFwOi8vbGRhcC5idXlwYXNzLm5vL2RjPUJ1eXBhc3MsZGM9Tk8sQ049QnV5
+cGFzcyUyMENsYXNzJTIwMyUyMENBJTIwMz9jZXJ0aWZpY2F0ZVJldm9jYXRpb25M
+aXN0MHoGCCsGAQUFBwEBBG4wbDAzBggrBgEFBQcwAYYnaHR0cDovL29jc3AuYnV5
+cGFzcy5uby9vY3NwL0JQQ2xhc3MzQ0EzMDUGCCsGAQUFBzAChilodHRwOi8vY3J0
+LmJ1eXBhc3Mubm8vY3J0L0JQQ2xhc3MzQ0EzLmNlcjANBgkqhkiG9w0BAQsFAAOC
+AQEAFzE3A8H0/5Qp/EJk3iWHaGWDeb42kp6N6aPw8FThxvVP1HKjwppKBamGkQp5
+8KLxvI2Gc2n/9VexXZxtrB0wqE5ce4CftBZn/XZhSQCjAH+Bnf4sVTQB8DM7t4eM
+zMFOLSCOH+U1IP5eezX6+O8CRkY/XawY38GMwFJOhmRpoiTGI3No5KANScUbkWOg
+/Ebww3XVIYvglknr5Dk8/asJpgHrkEbDz7lgEM03VF1rFIf5vBiwDDcHhgiIkjuS
+KTPwaClzbq6mM7imlKMX/vUr46zK+0TjaRpOgRHgR0IjigetZCQ3KQJko8rm0O5k
+y6KR/cUIZ779JodfK8Yjicdecg==
+</dsig:X509Certificate>
+        </dsig:X509Data>
+      </dsig:KeyInfo>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes192-cbc"/>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc"/>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#tripledes-cbc"/>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://orafed.bergen.kommune.no/fed/sp/samlv20" ResponseLocation="https://orafed.bergen.kommune.no/fed/sp/samlv20"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://orafed.bergen.kommune.no/fed/sp/samlv20" ResponseLocation="https://orafed.bergen.kommune.no/fed/sp/samlv20"/>
+    <md:ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://orafed.bergen.kommune.no/fed/sp/samlv20" ResponseLocation="https://orafed.bergen.kommune.no/fed/sp/samlv20"/>
+    <md:ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://orafed.bergen.kommune.no/fed/sp/soap"/>
+    <md:ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://orafed.bergen.kommune.no/fed/sp/samlv20" ResponseLocation="https://orafed.bergen.kommune.no/fed/sp/samlv20"/>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://orafed.bergen.kommune.no/fed/sp/art20" index="0" isDefault="true"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://orafed.bergen.kommune.no/fed/sp/authnResponse20" index="1"/>
+  </md:SPSSODescriptor>
+</md:EntityDescriptor>
