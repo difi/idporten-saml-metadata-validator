@@ -25,9 +25,6 @@ public class MetadataController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String provideUploadInfo(Model model) {
         File rootFolder = new File(Application.ROOT);
-        List<String> fileNames = Arrays.stream(rootFolder.listFiles())
-                .map(File::getName)
-                .collect(Collectors.toList());
 
         model.addAttribute("files",
                 Arrays.stream(rootFolder.listFiles())
@@ -43,7 +40,6 @@ public class MetadataController {
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
 
-
         if (!file.isEmpty()) {
             InputStream stream;
             try {
@@ -53,9 +49,11 @@ public class MetadataController {
                 //TODO: Log stacktrace to file
                 redirectAttributes.addFlashAttribute("message", "Feil under streaming av fil.");
             }
+
             redirectAttributes
                     .addFlashAttribute("message", "Filen er lastet opp")
-                    .addFlashAttribute("showpanel", true);
+                    .addFlashAttribute("showpanel", true)
+                    .addFlashAttribute("filename", file.getOriginalFilename());
         }
 
         return "redirect:/";

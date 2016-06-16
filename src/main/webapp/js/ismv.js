@@ -8,6 +8,9 @@ function setFilename() {
     if (split.length == 1) {
         split = filename.split('/');
     }
-    $('#filename').html(split[split.length-1]);
-    $('#validate').removeAttr('disabled');
+    var filename = $("#filename");
+    filename.html(split[split.length - 1]);
+    filename.fadeTo(1000, 0.40);
+    filename.fadeTo(1000, 1);
+    $('#validate').removeAttr('disabled').removeClass('button-disabled');
 }

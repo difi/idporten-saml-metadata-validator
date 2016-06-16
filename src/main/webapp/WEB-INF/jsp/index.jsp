@@ -18,7 +18,8 @@
                     <div class="button-group">
                         <label id="file-picker-overlay" for="file-picker" class="file-selector-overlay">Velg fil</label>
                         <input id="file-picker" type="file" name="file" accept=".xml" onchange="setFilename()"/>
-                        <input id="validate" type="submit" value="Valider" disabled onclick="showResult()"/>
+                        <input id="validate" class="button-disabled" type="submit" value="Valider" disabled
+                               onclick="showResult()"/>
                     </div>
                 </div>
             </form>
@@ -26,7 +27,7 @@
 
         <c:if test="${showpanel==true}">
             <div id="result-panel" class="panel">
-                <div class="panel-heading">Resultat</div>
+                <div class="panel-heading">Validert resultat <c:out value="${filename}"/></div>
                 <div class="panel-body">
                     <c:out value="${message}"/>
                 </div>
