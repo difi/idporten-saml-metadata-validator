@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @PropertySource("classpath:messages.properties")
@@ -21,5 +22,13 @@ public class MetadataConfig {
     @Bean
     public MetadataController metadataController(){
         return new MetadataController(validator());
+    }
+
+    @Bean
+    public InternalResourceViewResolver internalResourceViewResolver () {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("WEB-INF/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
     }
 }
