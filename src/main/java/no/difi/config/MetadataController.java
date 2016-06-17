@@ -32,14 +32,11 @@ public class MetadataController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String provideUploadInfo(Model model) {
         File rootFolder = new File(Application.ROOT);
-        List<String> fileNames = Arrays.stream(rootFolder.listFiles())
-                .map(f -> f.getName())
-                .collect(Collectors.toList());
 
         model.addAttribute("files",
                 Arrays.stream(rootFolder.listFiles())
                         .sorted(Comparator.comparingLong(f -> -1 * f.lastModified()))
-                        .map(f -> f.getName())
+                        .map(File::getName)
                         .collect(Collectors.toList())
         );
 
@@ -50,7 +47,6 @@ public class MetadataController {
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
 
-
         if (!file.isEmpty()) {
             try {
                 stream = file.getInputStream();
@@ -58,6 +54,11 @@ public class MetadataController {
                 //TODO: Log stacktrace to file
                 redirectAttributes.addFlashAttribute("message", "Feil under streaming av fil.");
             }
+
+            redirectAttributes
+                    .addFlashAttribute("message", "Filen er lastet opp")
+                    .addFlashAttribute("showpanel", true)
+                    .addFlashAttribute("filename", file.getOriginalFilename());
         }
 
         validator.validate(stream, redirectAttributes);
