@@ -29,11 +29,11 @@
             <div id="result-panel" class="panel">
                 <div class="panel-heading">Validert resultat <c:out value="${filename}"/></div>
                 <div class="panel-body">
-                    <c:out value="${file}"/>
-                    <c:out value="${message}"/>
                     <c:out value="${error}"/>
                 </div>
-                <div class="panel-footer">Footer</div>
+                <div class="panel-footer">
+                    <c:out value="${message}"/>
+                </div>
             </div>
         </c:if>
     </div>

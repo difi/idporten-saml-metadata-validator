@@ -49,14 +49,14 @@ public class MetadataController {
 
         if (!file.isEmpty()) {
             try {
-                validator.validate(file, redirectAttributes);
+                if (validator.validate(file, redirectAttributes)) {
+                    redirectAttributes.addFlashAttribute("error", "OK");
+                }
             } catch (IOException e) {
                 //TODO: Log stacktrace to file
                 redirectAttributes.addFlashAttribute("message", "Feil under validering av fil.");
             }
-            redirectAttributes.addFlashAttribute("file", file.getOriginalFilename() + " er validert");
             redirectAttributes
-                    .addFlashAttribute("message", "Filen er lastet opp")
                     .addFlashAttribute("showpanel", true)
                     .addFlashAttribute("filename", file.getOriginalFilename());
         }
