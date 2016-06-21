@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<html lang="en">
+<head>
+    <title>ID-Porten Saml Metadata Validator</title>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="language" content="no" />
+
+    <link rel="stylesheet" type="text/css" href="/css/ismv.css?v=1" media="all" />
+
+    <script src="<c:url value='/js/jquery-1.12.4.min.js' />" type="text/javascript"></script>
+    <script src="<c:url value='/js/ismv.js' />" type="text/javascript"></script>
+</head>

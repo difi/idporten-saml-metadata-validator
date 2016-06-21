@@ -5,10 +5,10 @@ CMD ["/usr/bin/java", "-version"]
 
 ARG APP_NAME
 
-COPY $APP_NAME /app.jar
+COPY $APP_NAME /app.war
 
-RUN sh -c 'touch /app.jar'
+RUN sh -c 'touch /app.war'
 
 EXPOSE 9000
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app.war"]
