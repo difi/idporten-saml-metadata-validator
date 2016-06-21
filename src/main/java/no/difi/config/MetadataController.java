@@ -53,16 +53,13 @@ public class MetadataController {
 
         if (!file.isEmpty()) {
             try {
-                stream = file.getInputStream();
+                validator.validate(file, redirectAttributes);
             } catch (IOException e) {
                 //TODO: Log stacktrace to file
-                redirectAttributes.addFlashAttribute("message", "Feil under streaming av fil.");
+                redirectAttributes.addFlashAttribute("message", "Feil under validering av fil.");
             }
+            redirectAttributes.addFlashAttribute("file", file.getOriginalFilename() + " er validert");
         }
-
-        validator.validate(stream, redirectAttributes);
-        redirectAttributes.addFlashAttribute("file", file.getOriginalFilename() + " er validert");
-
         return "redirect:/";
     }
 }

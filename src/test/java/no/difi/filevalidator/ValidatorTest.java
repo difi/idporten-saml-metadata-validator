@@ -4,6 +4,8 @@ import no.difi.config.MetadataConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -32,7 +34,7 @@ public class ValidatorTest {
     private RedirectAttributes redirectAttributes;
 
     @Spy
-    InputStream inputStreamSpyMock = new ByteArrayInputStream(createValidXml().getBytes());
+    MockMultipartFile spyMockMultipartFile = new MockMultipartFile("test", createValidXml().getBytes());
 
     @Before
     public void setUp() throws Exception {
@@ -76,24 +78,27 @@ public class ValidatorTest {
         assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void should_write_error_when_io_exception_is_thrown() throws IOException{
         String errorMessage = "IO Exception was thrown";
+
+        InputStream inputStreamSpyMock = Mockito.spy(spyMockMultipartFile.getInputStream());
+        PowerMockito.when(spyMockMultipartFile.getInputStream()).thenReturn(inputStreamSpyMock);
         PowerMockito.doThrow(new IOException(errorMessage)).when(inputStreamSpyMock).close();
 
-        validator.validate(inputStreamSpyMock, redirectAttributes);
+        validator.validate(spyMockMultipartFile, redirectAttributes);
 
         assertEquals(errorMessage, redirectAttributes.getFlashAttributes().get("error"));
     }
 
-    private static InputStream createValidMultipartFileXml() throws Exception {
+    private static MockMultipartFile createValidMultipartFileXml() throws Exception {
         MockMultipartFile fileMock = new MockMultipartFile("test", createValidXml().getBytes());
-        return fileMock.getInputStream();
+        return fileMock;
     }
 
-    private static InputStream createInvalidMultipartFileXml() throws Exception {
+    private static MockMultipartFile createInvalidMultipartFileXml() throws Exception {
         MockMultipartFile fileMock = new MockMultipartFile("test", createInvalidXml().getBytes());
-        return fileMock.getInputStream();
+        return fileMock;
     }
 
     private static String createInvalidXml() {
@@ -155,7 +160,7 @@ public class ValidatorTest {
                 "        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>\n" +
                 "        <AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/assertionconsumer\"/>\n" +
                 "    </SPSSODescriptor>\n" +
-                "</EntityDescriptor>";
+                "</EntityDescriptor>\n";
     }
 
 }
