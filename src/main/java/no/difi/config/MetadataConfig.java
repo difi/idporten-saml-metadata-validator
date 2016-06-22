@@ -5,11 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
-@PropertySource("classpath:messages.properties")
+@PropertySource({"classpath:messages.properties", "classpath:validator.properties"})
 public class MetadataConfig {
     @Autowired
     private Environment environment;
@@ -26,7 +27,7 @@ public class MetadataConfig {
 
     @Bean
     public InternalResourceViewResolver internalResourceViewResolver () {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setPrefix("WEB-INF/jsp/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;

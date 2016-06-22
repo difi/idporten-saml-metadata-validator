@@ -2,6 +2,7 @@ package no.difi.config;
 
 import no.difi.filevalidator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +22,12 @@ import java.util.stream.Collectors;
 @Controller
 public class MetadataController {
 
+    private static final String VALIDATION_OK_RESULT = "validation.ok.result";
+    private static final String VALIDATION_GENERAL_ERROR = "validation.general.error";
     private final Validator validator;
-    private InputStream stream;
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     public MetadataController(Validator validator){
@@ -49,16 +54,16 @@ public class MetadataController {
 
         if (!file.isEmpty()) {
             try {
-                if (validator.validate(file, redirectAttributes)) {
-                    redirectAttributes.addFlashAttribute("error", "OK");
-                }
+                validator.validate(file);
             } catch (IOException e) {
                 //TODO: Log stacktrace to file
-                redirectAttributes.addFlashAttribute("message", "Feil under validering av fil.");
+                validator.setMessage(environment.getProperty(VALIDATION_GENERAL_ERROR));
             }
             redirectAttributes
                     .addFlashAttribute("showpanel", true)
-                    .addFlashAttribute("filename", file.getOriginalFilename());
+                    .addFlashAttribute("filename", file.getOriginalFilename())
+                    .addFlashAttribute("message", validator.getMessage())
+                    .addFlashAttribute("result", validator.getResult());
         }
         return "redirect:/";
     }
