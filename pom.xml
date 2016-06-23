@@ -6,7 +6,7 @@
 
     <groupId>no.difi.kontaktinfo</groupId>
     <artifactId>idporten-saml-metadata-validator</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>VERSION-SNAPSHOT</version>
 
     <scm>
         <developerConnection>
@@ -24,6 +24,8 @@
     <packaging>war</packaging>
 
     <properties>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <java.version>1.8</java.version>
         <docker.image.prefix>docker-registry.dmz.local</docker.image.prefix>
 
@@ -82,6 +84,15 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <newVersion>${build.timestamp}</newVersion>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.7</version>

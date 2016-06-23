@@ -1,7 +1,16 @@
 stage 'Dev'
 node {
     checkout scm
-    sh 'mvn -T 1C clean -Pall'
-    sh 'mvn -T 1C compile -Pall'
-    sh 'mvn -T 1C test -Pall'
+    if (env.BRANCH_NAME == 'master') {
+        sh 'mvn -T 1C clean'
+        sh 'mvn -T 1C versions:set'
+        sh 'mvn -T 1C package'
+        sh 'mvn docker:build'
+        sh 'mvn docker:push'
+    }
+    else {
+        sh 'mvn -T 1C clean -Pall'
+        sh 'mvn -T 1C compile -Pall'
+        sh 'mvn -T 1C test -Pall'
+    }
 }
