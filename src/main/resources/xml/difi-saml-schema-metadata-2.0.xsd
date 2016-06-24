@@ -17,7 +17,7 @@
     <import namespace="urn:oasis:names:tc:SAML:2.0:assertion"
         schemaLocation="saml-schema-assertion-2.0.xsd"/>
     <import namespace="http://www.w3.org/XML/1998/namespace"
-            schemaLocation="xml.xsd"/><!--"file:///C:/development/idporten-saml-metadata-validator/src/main/resources/xml/-->
+            schemaLocation="xml.xsd"/><!--"file:///C:/development/idporten-saml-metadata-validatorService/src/main/resources/xml/-->
     <annotation>
         <documentation>
             Document identifier: saml-schema-metadata-2.0

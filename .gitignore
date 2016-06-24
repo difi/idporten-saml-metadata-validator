@@ -1,5 +1,5 @@
 .idea
 
-idporten-saml-metadata-validator.iml
-metadata-validator.iml
+idporten-saml-metadata-validatorService.iml
+metadata-validatorService.iml
 target/

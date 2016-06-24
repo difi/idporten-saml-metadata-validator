@@ -1,23 +1,19 @@
-package no.difi.filevalidator;
+package no.difi.service;
 
 import no.difi.config.MetadataConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ExceptionDepthComparator;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,15 +23,16 @@ import static org.junit.Assert.*;
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MetadataConfig.class})
-public class ValidatorTest {
+public class ValidatorServiceTest {
 
     private static final String VALIDATION_ERROR_XML = "validation.error.xml";
     private static final String VALIDATION_ERROR_XSD = "validation.error.xsd";
     private static final String VALIDATION_OK_MESSAGE = "validation.ok.message";
     private static final String VALIDATION_OK_RESULT = "validation.ok.result";
+    private static final String VALIDATION_GENERAL_ERROR = "validation.general.error";
 
     @Autowired
-    private Validator validator;
+    private ValidatorService validatorService;
 
     @Autowired
     private Environment environment;
@@ -50,79 +47,64 @@ public class ValidatorTest {
 
     @Test
     public void should_return_true_when_file_is_valid() throws Exception {
-
-        assertTrue(validator.validate(createValidMultipartFileXml()));
+        assertTrue(validatorService.validate(createValidMultipartFileXml()).getValid());
     }
 
     @Test
     public void should_write_ok_message_when_file_is_valid() throws Exception {
-        validator.validate(createValidMultipartFileXml());
-        assertEquals(environment.getProperty(VALIDATION_OK_MESSAGE), validator.getMessage());
+        assertEquals(environment.getProperty(Message.VALIDATION_OK_MESSAGE.key()), validatorService.validate(createValidMultipartFileXml()).getMessage());
     }
     @Test
     public void should_write_ok_result_when_file_is_valid() throws Exception {
-        validator.validate(createValidMultipartFileXml());
-
-        assertEquals(environment.getProperty(VALIDATION_OK_RESULT), validator.getResult());
+        validatorService.validate(createValidMultipartFileXml());
+        assertEquals(environment.getProperty(Message.VALIDATION_OK_RESULT.key()), validatorService.validate(createValidMultipartFileXml()).getResult());
     }
 
     @Test
     public void should_return_false_when_file_has_invalid_xml_syntax() throws Exception {
-
-        assertFalse(validator.validate(createInvalidMultipartFileXml()));
+        assertFalse(validatorService.validate(createInvalidMultipartFileXml()).getValid());
     }
 
     @Test
     public void should_give_invalid_xml_message_when_file_has_invalid_xml_syntax() throws Exception {
-
-        validator.validate(createInvalidMultipartFileXml());
-
-        assertEquals(environment.getProperty(VALIDATION_ERROR_XML), validator.getMessage());
+        assertEquals(environment.getProperty(Message.VALIDATION_ERROR_XML.key()), validatorService.validate(createInvalidMultipartFileXml()).getMessage());
     }
 
     @Test
     public void should_write_error_message_when_file_has_invalid_xml_syntax() throws Exception {
-        validator.validate(createInvalidMultipartFileXml());
-
-        assertEquals(environment.getProperty(VALIDATION_ERROR_XML), validator.getMessage());
+        assertEquals(environment.getProperty(Message.VALIDATION_ERROR_XML.key()), validatorService.validate(createInvalidMultipartFileXml()).getMessage());
     }
 
     @Test
     public void should_write_error_result_when_file_has_invalid_xml_syntax() throws Exception {
-        validator.validate(createInvalidMultipartFileXml());
-
-        assertNotEquals(environment.getProperty(VALIDATION_OK_RESULT), validator.getResult());
+        assertNotEquals(environment.getProperty(Message.VALIDATION_OK_RESULT.key()), validatorService.validate(createInvalidMultipartFileXml()).getResult());
     }
+
     @Test(expected = IOException.class)
     public void should_write_error_when_io_exception_is_thrown() throws IOException{
         String errorMessage = "IO Exception was thrown";
 
         InputStream inputStreamSpyMock = Mockito.spy(spyMockMultipartFile.getInputStream());
         PowerMockito.when(spyMockMultipartFile.getInputStream()).thenReturn(inputStreamSpyMock);
-        PowerMockito.doThrow(new IOException(errorMessage)).when(inputStreamSpyMock).close();
+        PowerMockito.doThrow(new IOException(environment.getProperty(Message.VALIDATION_GENERAL_ERROR.key()))).when(inputStreamSpyMock).close();
 
-        validator.validate(spyMockMultipartFile);
-
-        assertEquals(errorMessage, validator.getResult());
+        assertEquals(environment.getProperty(Message.VALIDATION_GENERAL_ERROR.key()), validatorService.validate(spyMockMultipartFile).getResult());
     }
 
     @Test
     public void should_return_false_when_file_does_not_validate_against_xsd() throws Exception{
-        assertFalse(validator.validate(createMetaFileWithExtraInvalidTag()));
+        assertFalse(validatorService.validate(createMetaFileWithExtraInvalidTag()).getValid());
 
     }
 
     @Test
     public void should_write_error_message_when_file_does_not_validate_against_xsd() throws Exception {
-        validator.validate(createMetaFileWithExtraInvalidTag());
-
-        assertEquals(environment.getProperty(VALIDATION_ERROR_XSD), validator.getMessage());
+        assertEquals(environment.getProperty(Message.VALIDATION_ERROR_XSD.key()), validatorService.validate(createMetaFileWithExtraInvalidTag()).getMessage());
     }
 
     @Test
     public void should_write_error_result_when_file_does_not_validate_against_xsd() throws Exception {
-        validator.validate(createMetaFileWithExtraInvalidTag());
-        assertNotEquals(environment.getProperty(VALIDATION_OK_RESULT), validator.getResult());
+        assertNotEquals(environment.getProperty(Message.VALIDATION_OK_RESULT.key()), validatorService.validate(createMetaFileWithExtraInvalidTag()).getResult());
     }
 
     private static MockMultipartFile createMetaFileWithExtraInvalidTag() throws Exception {

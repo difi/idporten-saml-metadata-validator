@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>no.difi.kontaktinfo</groupId>
-    <artifactId>idporten-saml-metadata-validator</artifactId>
+    <artifactId>idporten-saml-metadata-validatorService</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <scm>
         <developerConnection>
-            scm:git:[fetch=]http://github.com/difi/idporten-saml-metadata-validator
+            scm:git:[fetch=]http://github.com/difi/idporten-saml-metadata-validatorService
         </developerConnection>
     </scm>
 
@@ -121,7 +121,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <alias>meta-validator</alias>
+                            <alias>meta-validatorService</alias>
                             <name>${docker.image.prefix}/${project.artifactId}:${project.version}</name>
                             <build>
                                 <args>

@@ -1,10 +1,11 @@
-package no.difi.filevalidator;
+package no.difi.service;
 
+import no.difi.domain.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
@@ -20,27 +21,18 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-@Component
-public class Validator {
+@Service
+public class ValidatorService {
 
-    private static final String VALIDATION_ERROR_XML = "validation.error.xml";
-    private static final String VALIDATION_ERROR_XSD = "validation.error.xsd";
-    private static final String VALIDATION_OK_MESSAGE = "validation.ok.message";
-    private static final String VALIDATION_OK_RESULT = "validation.ok.result";
     private static final String METADATA_XSDS = "metadata.xsds";
     private static final String RESOURCES = "/xml/*";
 
     private final Environment environment;
 
-    private String message;
-    private String result;
-
     @Autowired
-    public Validator(final Environment environment){
+    public ValidatorService(final Environment environment){
 
         this.environment = environment;
-        setMessage("");
-        setResult("");
     }
 
     private Resource[] getXsds() throws IOException {
@@ -49,25 +41,17 @@ public class Validator {
         return resolver.getResources(RESOURCES);
     }
 
-    public boolean validate(final MultipartFile file) throws IOException {
-
+    public ValidationResult validate(final MultipartFile file) throws IOException {
         InputStream stream = file.getInputStream();
-        if(!validateXML(stream)){
-            setMessage(environment.getProperty(VALIDATION_ERROR_XML));
+        final ValidationResult validationResult = validateXML(stream);
+        if(!validationResult.getValid()){
             stream.close();
-            return false;
+            return validationResult;
         }else{
             stream = resetInputStream(file, stream);
         }
-        if(!validateXMLSchema(stream)){
-            setMessage(environment.getProperty(VALIDATION_ERROR_XSD));
-            stream.close();
-            return false;
-        }
-        setMessage(environment.getProperty(VALIDATION_OK_MESSAGE));
-        setResult(environment.getProperty(VALIDATION_OK_RESULT));
-        stream.close();
-        return true;
+        return validateXMLSchema(stream);
+
     }
 
     private InputStream resetInputStream(final MultipartFile file, final InputStream stream) throws IOException {
@@ -75,10 +59,10 @@ public class Validator {
         return file.getInputStream();
     }
 
-    private boolean validateXML(final InputStream xml) throws IOException {
+    private ValidationResult validateXML(final InputStream xml) throws IOException {
 
         if(xml == null){
-            return false;
+            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result("").build();
         }
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(false);
@@ -89,45 +73,45 @@ public class Validator {
             builder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             //TODO: Log stacktrace to file
-            e.printStackTrace();
-            return false;
+            xml.close();
+            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result(e.getMessage()).build();
         }
         try {
             builder.parse(xml);
         } catch (SAXException e) {
             //TODO: Log stacktrace to file
-            setResult(e.getMessage());
-            return false;
+            xml.close();
+            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XML.key())).result(e.getMessage()).build();
         } catch (IOException e) {
             //TODO: Log stacktrace to file
-            setResult(e.getMessage());
-            return false;
+            xml.close();
+            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result(e.getMessage()).build();
         }
-
-        return true;
+        xml.close();
+        return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
     }
 
-    private boolean validateXMLSchema(final InputStream xml) throws IOException {
+    private ValidationResult validateXMLSchema(final InputStream xml) throws IOException {
 
         final Resource[] xsdResources = getXsds();
         final StreamSource[] xsds = generateStreamSourceFromXsdResources(xsdResources);
-
 
             final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
             final Schema schema = schemaFactory.newSchema(xsds);
             final javax.xml.validation.Validator validator = schema.newValidator();
             validator.validate(new StreamSource(xml));
-            return true;
+            xml.close();
+            return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
         } catch (org.xml.sax.SAXException ex) {
-            setResult(ex.getMessage());
-            return false;
+            xml.close();
+            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XSD.key())).result(ex.getMessage()).build();
         }
     }
 
     private StreamSource[] generateStreamSourceFromXsdResources(final Resource[] resources)throws IOException{
 
-        final List<String> xsds = Arrays.asList(environment.getProperty(METADATA_XSDS).split("\\s*,\\s*"));
+        final List<String> xsds = Arrays.asList(environment.getRequiredProperty(METADATA_XSDS).split("\\s*,\\s*"));
         final StreamSource[] sortedArray = new StreamSource[resources.length];
 
         for (Resource resource : resources) {
@@ -135,21 +119,5 @@ public class Validator {
         }
 
         return sortedArray;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(final String message) {
-        this.message = message;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(final String result) {
-        this.result = result;
     }
 }

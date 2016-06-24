@@ -1,6 +1,7 @@
 package no.difi.config;
 
-import no.difi.filevalidator.Validator;
+import no.difi.controller.MetadataController;
+import no.difi.service.ValidatorService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -22,12 +23,12 @@ public class MetadataControllerTest {
 
     private MockMvc mvc;
     @Mock
-    private Validator validatorMock;
+    private ValidatorService validatorServiceMock;
 
     @Before
     public void setUp() {
         initMocks(this);
-        mvc = MockMvcBuilders.standaloneSetup(new MetadataController(validatorMock)).build();
+        mvc = MockMvcBuilders.standaloneSetup(new MetadataController(validatorServiceMock)).build();
     }
 
     @Test

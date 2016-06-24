@@ -1,6 +1,9 @@
-package no.difi.config;
+package no.difi.controller;
 
-import no.difi.filevalidator.Validator;
+import no.difi.config.Application;
+import no.difi.domain.ValidationResult;
+import no.difi.service.ValidatorService;
+import no.difi.service.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -11,32 +14,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
 public class MetadataController {
 
-    private static final String VALIDATION_OK_RESULT = "validation.ok.result";
-    private static final String VALIDATION_GENERAL_ERROR = "validation.general.error";
-    private final Validator validator;
+    private final ValidatorService validatorService;
 
     @Autowired
     private Environment environment;
 
     @Autowired
-    public MetadataController(Validator validator){
-        this.validator = validator;
+    public MetadataController(final ValidatorService validatorService){
+        this.validatorService = validatorService;
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String provideUploadInfo(Model model) {
-        File rootFolder = new File(Application.ROOT);
+    public String provideUploadInfo(final Model model) {
+        final File rootFolder = new File(Application.ROOT);
 
         model.addAttribute("files",
                 Arrays.stream(rootFolder.listFiles())
@@ -50,21 +51,26 @@ public class MetadataController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
+                                   final RedirectAttributes redirectAttributes) {
 
-        if (!file.isEmpty()) {
+        ValidationResult validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result("").build();
             try {
-                validator.validate(file);
+                if(!file.isEmpty()) {
+                    InputStream stream = file.getInputStream();
+                    validationResult = validatorService.validate(file);
+                }
             } catch (IOException e) {
                 //TODO: Log stacktrace to file
-                validator.setMessage(environment.getProperty(VALIDATION_GENERAL_ERROR));
+                validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result(e.getMessage()).build();
             }
             redirectAttributes
                     .addFlashAttribute("showpanel", true)
-                    .addFlashAttribute("filename", file.getOriginalFilename())
-                    .addFlashAttribute("message", validator.getMessage())
-                    .addFlashAttribute("result", validator.getResult());
+                    .addFlashAttribute("message", validationResult.getMessage())
+                    .addFlashAttribute("result", validationResult.getResult());
+        if(!file.isEmpty()) {
+            redirectAttributes.addFlashAttribute("filename", file.getOriginalFilename());
         }
+
         return "redirect:/";
     }
 }
