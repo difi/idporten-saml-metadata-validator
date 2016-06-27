@@ -144,7 +144,7 @@
                             </build>
                             <run>
                                 <ports>
-                                    <port>9000:9000</port>
+                                    <port>10009:10009</port>
                                 </ports>
                             </run>
                         </image>
