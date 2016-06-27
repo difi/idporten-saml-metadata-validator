@@ -9,6 +9,6 @@ COPY $APP_NAME /app.war
 
 RUN sh -c 'touch /app.war'
 
-EXPOSE 10009
+EXPOSE 9000
 
 ENTRYPOINT ["java", "-jar", "/app.war"]
