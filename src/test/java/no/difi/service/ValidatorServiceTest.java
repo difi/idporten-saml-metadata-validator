@@ -25,12 +25,6 @@ import static org.junit.Assert.*;
 @ContextConfiguration(classes = {MetadataConfig.class})
 public class ValidatorServiceTest {
 
-    private static final String VALIDATION_ERROR_XML = "validation.error.xml";
-    private static final String VALIDATION_ERROR_XSD = "validation.error.xsd";
-    private static final String VALIDATION_OK_MESSAGE = "validation.ok.message";
-    private static final String VALIDATION_OK_RESULT = "validation.ok.result";
-    private static final String VALIDATION_GENERAL_ERROR = "validation.general.error";
-
     @Autowired
     private ValidatorService validatorService;
 
