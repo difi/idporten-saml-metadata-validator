@@ -1,6 +1,6 @@
 package no.difi.controller;
 
-import no.difi.config.Application;
+import no.difi.application.Application;
 import no.difi.domain.ValidationResult;
 import no.difi.service.ValidatorService;
 import no.difi.service.Message;
@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -56,7 +54,6 @@ public class MetadataController {
         ValidationResult validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result("").build();
             try {
                 if(!file.isEmpty()) {
-                    InputStream stream = file.getInputStream();
                     validationResult = validatorService.validate(file);
                 }
             } catch (IOException e) {
@@ -64,7 +61,7 @@ public class MetadataController {
                 validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result(e.getMessage()).build();
             }
             redirectAttributes
-                    .addFlashAttribute("showpanel", true)
+                    .addFlashAttribute("showpanel", validationResult.getValid())
                     .addFlashAttribute("message", validationResult.getMessage())
                     .addFlashAttribute("result", validationResult.getResult());
         if(!file.isEmpty()) {

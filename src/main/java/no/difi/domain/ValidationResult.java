@@ -2,7 +2,6 @@ package no.difi.domain;
 
 
 public class ValidationResult {
-
     private boolean valid;
     private String message;
     private String result;
@@ -18,37 +17,33 @@ public class ValidationResult {
     }
 
     public String getMessage(){
-        return message;
+        return message == null ? "" : message;
     }
 
     public String getResult(){
-        return result;
+        return result == null ? "" : result;
     }
 
-    public static ValidationResultBuilder builder(){
-        return new ValidationResultBuilder();
+    public static Builder builder(){
+        return new Builder();
     }
 
-    public static class ValidationResultBuilder {
+    public static class Builder {
         private boolean valid;
         private String message;
         private String result;
 
-        public ValidationResultBuilder(){
-
-        }
-
-        public ValidationResultBuilder valid(final boolean valid){
+        public Builder valid(final boolean valid){
             this.valid = valid;
             return this;
         }
 
-        public ValidationResultBuilder message(final String message){
+        public Builder message(final String message){
             this.message = message;
             return this;
         }
 
-        public ValidationResultBuilder result(final String result){
+        public Builder result(final String result){
             this.result = result;
             return this;
         }
@@ -57,6 +52,4 @@ public class ValidationResult {
             return new ValidationResult(valid, message, result);
         }
     }
-
-
 }

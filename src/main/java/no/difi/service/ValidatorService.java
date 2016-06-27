@@ -30,9 +30,25 @@ public class ValidatorService {
     private final Environment environment;
 
     @Autowired
-    public ValidatorService(final Environment environment){
-
+    public ValidatorService(final Environment environment) {
         this.environment = environment;
+    }
+
+    public ValidationResult validate(final MultipartFile file) throws IOException {
+        InputStream stream = file.getInputStream();
+        final ValidationResult validationResult = validateXML(stream);
+        if (!validationResult.getValid()) {
+            stream.close();
+            return validationResult;
+        } else {
+            stream = resetInputStream(file, stream);
+        }
+        return validateXMLSchema(stream);
+    }
+
+    private InputStream resetInputStream(final MultipartFile file, final InputStream stream) throws IOException {
+        stream.close();
+        return file.getInputStream();
     }
 
     private Resource[] getXsds() throws IOException {
@@ -41,27 +57,9 @@ public class ValidatorService {
         return resolver.getResources(RESOURCES);
     }
 
-    public ValidationResult validate(final MultipartFile file) throws IOException {
-        InputStream stream = file.getInputStream();
-        final ValidationResult validationResult = validateXML(stream);
-        if(!validationResult.getValid()){
-            stream.close();
-            return validationResult;
-        }else{
-            stream = resetInputStream(file, stream);
-        }
-        return validateXMLSchema(stream);
+    private ValidationResult validateXML(final InputStream stream) throws IOException {
 
-    }
-
-    private InputStream resetInputStream(final MultipartFile file, final InputStream stream) throws IOException {
-        stream.close();
-        return file.getInputStream();
-    }
-
-    private ValidationResult validateXML(final InputStream xml) throws IOException {
-
-        if(xml == null){
+        if (stream == null) {
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result("").build();
         }
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -71,45 +69,42 @@ public class ValidatorService {
 
         try {
             builder = factory.newDocumentBuilder();
+            builder.parse(stream);
         } catch (ParserConfigurationException e) {
             //TODO: Log stacktrace to file
-            xml.close();
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result(e.getMessage()).build();
-        }
-        try {
-            builder.parse(xml);
         } catch (SAXException e) {
             //TODO: Log stacktrace to file
-            xml.close();
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XML.key())).result(e.getMessage()).build();
         } catch (IOException e) {
             //TODO: Log stacktrace to file
-            xml.close();
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result(e.getMessage()).build();
+        } finally {
+            stream.close();
         }
-        xml.close();
         return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
     }
 
-    private ValidationResult validateXMLSchema(final InputStream xml) throws IOException {
+    private ValidationResult validateXMLSchema(final InputStream stream) throws IOException {
 
         final Resource[] xsdResources = getXsds();
         final StreamSource[] xsds = generateStreamSourceFromXsdResources(xsdResources);
 
-            final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
             final Schema schema = schemaFactory.newSchema(xsds);
             final javax.xml.validation.Validator validator = schema.newValidator();
-            validator.validate(new StreamSource(xml));
-            xml.close();
+            validator.validate(new StreamSource(stream));
+
             return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
         } catch (org.xml.sax.SAXException ex) {
-            xml.close();
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XSD.key())).result(ex.getMessage()).build();
+        } finally {
+            stream.close();
         }
     }
 
-    private StreamSource[] generateStreamSourceFromXsdResources(final Resource[] resources)throws IOException{
+    private StreamSource[] generateStreamSourceFromXsdResources(final Resource[] resources) throws IOException {
 
         final List<String> xsds = Arrays.asList(environment.getRequiredProperty(METADATA_XSDS).split("\\s*,\\s*"));
         final StreamSource[] sortedArray = new StreamSource[resources.length];
