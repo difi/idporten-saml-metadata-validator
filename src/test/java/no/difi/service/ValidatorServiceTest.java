@@ -1,27 +1,18 @@
 package no.difi.service;
 
 import no.difi.config.MetadataConfig;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import static org.junit.Assert.*;
 
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {MetadataConfig.class})
 public class ValidatorServiceTest {
 
@@ -33,11 +24,6 @@ public class ValidatorServiceTest {
 
     @Spy
     MockMultipartFile spyMockMultipartFile = new MockMultipartFile("test", createValidMetaFileString().getBytes());
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
 
     @Test
     public void should_return_true_when_file_is_valid() throws Exception {
@@ -72,17 +58,6 @@ public class ValidatorServiceTest {
     @Test
     public void should_write_error_result_when_file_has_invalid_xml_syntax() throws Exception {
         assertNotEquals(environment.getProperty(Message.VALIDATION_OK_RESULT.key()), validatorService.validate(createInvalidMultipartFileXml()).getResult());
-    }
-
-    @Test(expected = IOException.class)
-    public void should_write_error_when_io_exception_is_thrown() throws IOException{
-        String errorMessage = "IO Exception was thrown";
-
-        InputStream inputStreamSpyMock = Mockito.spy(spyMockMultipartFile.getInputStream());
-        PowerMockito.when(spyMockMultipartFile.getInputStream()).thenReturn(inputStreamSpyMock);
-        PowerMockito.doThrow(new IOException(environment.getProperty(Message.VALIDATION_GENERAL_ERROR.key()))).when(inputStreamSpyMock).close();
-
-        assertEquals(environment.getProperty(Message.VALIDATION_GENERAL_ERROR.key()), validatorService.validate(spyMockMultipartFile).getResult());
     }
 
     @Test
