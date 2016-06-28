@@ -4,7 +4,7 @@
 <div id="wrapper">
     <div class="container">
         <div class="page-header header-frame">
-            <h1 style="background: pink">
+            <h1>
                 <img class="head-logo" alt=" " src="/images/eid-logo.gif">
                 SAML Metadata Validator
             </h1>
