@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
@@ -36,12 +37,19 @@ public class ValidatorService {
 
     public ValidationResult validate(final MultipartFile file) throws IOException {
         InputStream stream = file.getInputStream();
-        ValidationResult validationResult = validateXML(stream);
-        if (validationResult.getValid()) {
-            validationResult = validateXMLSchema(stream);
+        final ValidationResult validationResult = validateXML(stream);
+        if (!validationResult.getValid()) {
+            stream.close();
+            return validationResult;
+        } else {
+            stream = resetInputStream(file, stream);
         }
+        return validateXMLSchema(stream);
+    }
+
+    private InputStream resetInputStream(final MultipartFile file, final InputStream stream) throws IOException {
         stream.close();
-        return validationResult;
+        return file.getInputStream();
     }
 
     private Resource[] getXsds() throws IOException {
@@ -71,6 +79,7 @@ public class ValidatorService {
     }
 
     private ValidationResult validateXMLSchema(final InputStream stream) throws IOException {
+
         final Resource[] xsdResources = getXsds();
         final StreamSource[] xsds = generateStreamSourceFromXsdResources(xsdResources);
 
