@@ -1,4 +1,4 @@
-package no.difi.service;
+package no.difi.domain;
 
 public enum Message {
     VALIDATION_OK_MESSAGE("validation.ok.message"),

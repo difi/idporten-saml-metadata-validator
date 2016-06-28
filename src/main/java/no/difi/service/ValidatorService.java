@@ -1,5 +1,6 @@
 package no.difi.service;
 
+import no.difi.domain.Message;
 import no.difi.domain.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -10,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
@@ -36,19 +36,12 @@ public class ValidatorService {
 
     public ValidationResult validate(final MultipartFile file) throws IOException {
         InputStream stream = file.getInputStream();
-        final ValidationResult validationResult = validateXML(stream);
-        if (!validationResult.getValid()) {
-            stream.close();
-            return validationResult;
-        } else {
-            stream = resetInputStream(file, stream);
+        ValidationResult validationResult = validateXML(stream);
+        if (validationResult.getValid()) {
+            validationResult = validateXMLSchema(stream);
         }
-        return validateXMLSchema(stream);
-    }
-
-    private InputStream resetInputStream(final MultipartFile file, final InputStream stream) throws IOException {
         stream.close();
-        return file.getInputStream();
+        return validationResult;
     }
 
     private Resource[] getXsds() throws IOException {
@@ -58,18 +51,10 @@ public class ValidatorService {
     }
 
     private ValidationResult validateXML(final InputStream stream) throws IOException {
-
-        if (stream == null) {
-            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result("").build();
-        }
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setValidating(false);
-        factory.setNamespaceAware(true);
-        final DocumentBuilder builder;
 
         try {
-            builder = factory.newDocumentBuilder();
-            builder.parse(stream);
+            factory.newDocumentBuilder().parse(stream);
         } catch (ParserConfigurationException e) {
             //TODO: Log stacktrace to file
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result(e.getMessage()).build();
@@ -86,7 +71,6 @@ public class ValidatorService {
     }
 
     private ValidationResult validateXMLSchema(final InputStream stream) throws IOException {
-
         final Resource[] xsdResources = getXsds();
         final StreamSource[] xsds = generateStreamSourceFromXsdResources(xsdResources);
 

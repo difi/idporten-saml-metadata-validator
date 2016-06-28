@@ -3,7 +3,7 @@ package no.difi.controller;
 import no.difi.application.Application;
 import no.difi.domain.ValidationResult;
 import no.difi.service.ValidatorService;
-import no.difi.service.Message;
+import no.difi.domain.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -61,12 +61,10 @@ public class MetadataController {
                 validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result(e.getMessage()).build();
             }
             redirectAttributes
-                    .addFlashAttribute("showpanel", validationResult.getValid())
+                    .addFlashAttribute("showpanel", true)
                     .addFlashAttribute("message", validationResult.getMessage())
-                    .addFlashAttribute("result", validationResult.getResult());
-        if(!file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("filename", file.getOriginalFilename());
-        }
+                    .addFlashAttribute("result", validationResult.getResult())
+                    .addFlashAttribute("filename", file.getOriginalFilename());
 
         return "redirect:/";
     }

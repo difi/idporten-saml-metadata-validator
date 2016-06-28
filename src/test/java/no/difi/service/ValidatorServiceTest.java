@@ -1,6 +1,7 @@
 package no.difi.service;
 
 import no.difi.config.MetadataConfig;
+import no.difi.domain.Message;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
@@ -22,9 +23,6 @@ public class ValidatorServiceTest {
     @Autowired
     private Environment environment;
 
-    @Spy
-    MockMultipartFile spyMockMultipartFile = new MockMultipartFile("test", createValidMetaFileString().getBytes());
-
     @Test
     public void should_return_true_when_file_is_valid() throws Exception {
         assertTrue(validatorService.validate(createValidMultipartFileXml()).getValid());
@@ -34,6 +32,7 @@ public class ValidatorServiceTest {
     public void should_write_ok_message_when_file_is_valid() throws Exception {
         assertEquals(environment.getProperty(Message.VALIDATION_OK_MESSAGE.key()), validatorService.validate(createValidMultipartFileXml()).getMessage());
     }
+
     @Test
     public void should_write_ok_result_when_file_is_valid() throws Exception {
         validatorService.validate(createValidMultipartFileXml());
@@ -63,7 +62,6 @@ public class ValidatorServiceTest {
     @Test
     public void should_return_false_when_file_does_not_validate_against_xsd() throws Exception{
         assertFalse(validatorService.validate(createMetaFileWithExtraInvalidTag()).getValid());
-
     }
 
     @Test
