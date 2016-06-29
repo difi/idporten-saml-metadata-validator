@@ -1,6 +1,5 @@
-package no.difi.config;
+package no.difi.controller;
 
-import no.difi.controller.MetadataController;
 import no.difi.domain.ValidationResult;
 import no.difi.service.ValidatorService;
 import org.junit.Before;

@@ -29,7 +29,7 @@ public class MetadataController {
     private Environment environment;
 
     @Autowired
-    public MetadataController(final ValidatorService validatorService){
+    public MetadataController(final ValidatorService validatorService) {
         this.validatorService = validatorService;
     }
 
@@ -52,19 +52,18 @@ public class MetadataController {
                                    final RedirectAttributes redirectAttributes) {
 
         ValidationResult validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result("").build();
-            try {
-                if(!file.isEmpty()) {
-                    validationResult = validatorService.validate(file);
-                }
-            } catch (IOException e) {
-                //TODO: Log stacktrace to file
-                validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result(e.getMessage()).build();
+        try {
+            if (!file.isEmpty()) {
+                validationResult = validatorService.validate(file);
             }
-            redirectAttributes
-                    .addFlashAttribute("showpanel", true)
-                    .addFlashAttribute("message", validationResult.getMessage())
-                    .addFlashAttribute("result", validationResult.getResult())
-                    .addFlashAttribute("filename", file.getOriginalFilename());
+        } catch (IOException e) {
+            //TODO: Log stacktrace to file
+            validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result(e.getMessage()).build();
+        }
+        redirectAttributes
+                .addFlashAttribute("showpanel", true)
+                .addFlashAttribute("validationResult", validationResult)
+                .addFlashAttribute("filename", file.getOriginalFilename());
 
         return "redirect:/";
     }

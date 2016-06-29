@@ -29,10 +29,10 @@
             <div id="result-panel" class="panel">
                 <div class="panel-heading">Resultat av validiering av <c:out value="${filename}"/></div>
                 <div class="panel-body">
-                    <c:out value="${result}"/>
+                    <c:out value="${validationResult.result}"/>
                 </div>
                 <div class="panel-footer">
-                    <c:out value="${message}"/>
+                    <c:out value="${validationResult.message}"/>
                 </div>
             </div>
         </c:if>
