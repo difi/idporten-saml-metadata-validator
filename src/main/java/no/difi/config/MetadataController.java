@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Controller
@@ -39,6 +39,7 @@ public class MetadataController {
                         .map(File::getName)
                         .collect(Collectors.toList())
         );
+        model.addAttribute("appVersion", applicationVersion());
 
         return "index";
     }
@@ -65,5 +66,21 @@ public class MetadataController {
         redirectAttributes.addFlashAttribute("file", file.getOriginalFilename() + " er validert");
 
         return "redirect:/";
+    }
+
+    private String applicationVersion() {
+        InputStream pomPropertiesResource = getClass().getResourceAsStream(
+                "/META-INF/maven/no.difi.kontaktinfo/idporten-saml-metadata-validator/pom.properties"
+        );
+        if (pomPropertiesResource != null) {
+            Properties pomProperties = new Properties();
+            try {
+                pomProperties.load(pomPropertiesResource);
+            } catch (IOException e) {
+                return "Could not find version";
+            }
+            return pomProperties.getProperty("version");
+        }
+        return "Could not find version";
     }
 }

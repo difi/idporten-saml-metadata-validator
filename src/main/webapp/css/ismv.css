@@ -1,3 +1,9 @@
+#wrapper {
+    width: 100%;
+    position: relative;
+    padding-top: 91px;
+}
+
 .page-header {
     padding-bottom: 9px;
     margin: 40px 0 20px;
@@ -100,10 +106,11 @@
     vertical-align: bottom;
 }
 
-#wrapper {
-    width: 100%;
-    position: relative;
-    padding-top: 91px;
+.footer {
+    border-top: 1px solid #ccc;
+    padding: 16px 30px 20px 14px;
+    font-size: 0.9em;
+    display: block;
 }
 
 .file-selector-overlay {

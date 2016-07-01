@@ -36,9 +36,10 @@
                 <div class="panel-footer">Footer</div>
             </div>
         </c:if>
+        <div class="footer">
+            Version: <c:out value="${appVersion}"/>
+        </div>
     </div>
 </div>
 
-</body>
-
-</html>
+<%@ include file="frags/bottom.jspf" %>
