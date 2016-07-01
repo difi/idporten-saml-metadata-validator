@@ -1,111 +1,39 @@
-package no.difi.filevalidator;
+package no.difi;
 
-import no.difi.config.MetadataConfig;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Spy;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+public class MockMultipartFiles {
 
-import static org.junit.Assert.*;
-
-@RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {MetadataConfig.class})
-public class ValidatorTest {
-
-    @Autowired
-    private Validator validator;
-
-    private RedirectAttributes redirectAttributes;
-
-    @Spy
-    InputStream inputStreamSpyMock = new ByteArrayInputStream(createValidXml().getBytes());
-
-    @Before
-    public void setUp() throws Exception {
-        redirectAttributes = new RedirectAttributesModelMap();
+    public static String createNoneXml() {
+        return "Not xml at all";
     }
 
-    @Test
-    public void should_return_true_when_file_is_valid() throws Exception {
-        boolean valid = validator.validate(createValidMultipartFileXml(), redirectAttributes);
-
-        assertTrue(valid);
+    public static String createXmlWithMissingTag() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><start><end></start>";
     }
 
-    @Test
-    public void should_not_write_error_message_when_file_is_valid() throws Exception {
-        validator.validate(createValidMultipartFileXml(), redirectAttributes);
-
-        assertNull(redirectAttributes.getFlashAttributes().get("error"));
+    public static MockMultipartFile createMetaFileWithInvalidTag() throws Exception {
+        return new MockMultipartFile("test", createMetafileStringWithExtraInvalidTag().getBytes());
     }
 
-    @Test
-    public void should_return_false_when_file_has_invalid_xml_syntax() throws Exception {
-        Boolean valid = validator.validate(createInvalidMultipartFileXml(), redirectAttributes);
-
-        assertFalse(valid);
+    public static MockMultipartFile createValidMultipartFileXml() throws Exception {
+        return new MockMultipartFile("test", createValidMetaFileFullScenario().getBytes());
     }
 
-    @Test
-    public void should_give_invalid_xml_message_when_file_has_invalid_xml_syntax() throws Exception {
-        String invalidXML = "Filen er ikke gyldig xml";
-
-        validator.validate(createInvalidMultipartFileXml(), redirectAttributes);
-
-        assertEquals(invalidXML, redirectAttributes.getFlashAttributes().get("message"));
+    public static String createMetafileStringWithExtraInvalidTag() {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+                "<EntityDescriptor entityID=\"testsp\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n" +
+                "<bullshittag>bullshit</bullshittag>\n" +
+                "    <SPSSODescriptor AuthnRequestsSigned=\"true\" WantAssertionsSigned=\"true\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n" +
+                "        <SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"http://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n" +
+                "        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>\n" +
+                "        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>\n" +
+                "        <AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/assertionconsumer\"/>\n" +
+                "    </SPSSODescriptor>\n" +
+                "</EntityDescriptor>\n";
     }
 
-    @Test
-    public void should_write_error_when_file_has_invalid_xml_syntax() throws Exception {
-        validator.validate(createInvalidMultipartFileXml(), redirectAttributes);
-
-        assertNotNull(redirectAttributes.getFlashAttributes().get("error"));
-    }
-
-    @Test
-    public void should_write_error_when_io_exception_is_thrown() throws IOException{
-        String errorMessage = "IO Exception was thrown";
-        PowerMockito.doThrow(new IOException(errorMessage)).when(inputStreamSpyMock).close();
-
-        validator.validate(inputStreamSpyMock, redirectAttributes);
-
-        assertEquals(errorMessage, redirectAttributes.getFlashAttributes().get("error"));
-    }
-
-    private static InputStream createValidMultipartFileXml() throws Exception {
-        MockMultipartFile fileMock = new MockMultipartFile("test", createValidXml().getBytes());
-        return fileMock.getInputStream();
-    }
-
-    private static InputStream createInvalidMultipartFileXml() throws Exception {
-        MockMultipartFile fileMock = new MockMultipartFile("test", createInvalidXml().getBytes());
-        return fileMock.getInputStream();
-    }
-
-    private static String createInvalidXml() {
-        return "note>" +
-                "<to>Tove</to>" +
-                "<from>Jani</from>" +
-                "<heading>Reminder</heading>" +
-                "<body>Don't forget me this weekend!</body>" +
-                "</note>";
-    }
-
-    private static String createValidXml() {
+    private static String createValidMetaFileFullScenario() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
                 "<EntityDescriptor entityID=\"testsp\" xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\">\n" +
                 "    <SPSSODescriptor AuthnRequestsSigned=\"true\" WantAssertionsSigned=\"true\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n" +
@@ -155,7 +83,6 @@ public class ValidatorTest {
                 "        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>\n" +
                 "        <AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/assertionconsumer\"/>\n" +
                 "    </SPSSODescriptor>\n" +
-                "</EntityDescriptor>";
+                "</EntityDescriptor>\n";
     }
-
 }

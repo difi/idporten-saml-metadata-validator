@@ -1,7 +1,11 @@
-package no.difi.config;
+package no.difi.controller;
 
-import no.difi.filevalidator.Validator;
+import no.difi.application.Application;
+import no.difi.domain.ValidationResult;
+import no.difi.service.ValidatorService;
+import no.difi.domain.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,17 +25,19 @@ import java.util.stream.Collectors;
 @Controller
 public class MetadataController {
 
-    private final Validator validator;
-    private InputStream stream;
+    private final ValidatorService validatorService;
 
     @Autowired
-    public MetadataController(Validator validator){
-        this.validator = validator;
+    private Environment environment;
+
+    @Autowired
+    public MetadataController(final ValidatorService validatorService) {
+        this.validatorService = validatorService;
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String provideUploadInfo(Model model) {
-        File rootFolder = new File(Application.ROOT);
+    public String provideUploadInfo(final Model model) {
+        final File rootFolder = new File(Application.ROOT);
 
         model.addAttribute("files",
                 Arrays.stream(rootFolder.listFiles())
@@ -46,24 +52,21 @@ public class MetadataController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
+                                   final RedirectAttributes redirectAttributes) {
 
+        ValidationResult validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_GENERAL_ERROR.key()).result("").build();
         if (!file.isEmpty()) {
             try {
-                stream = file.getInputStream();
+                validationResult = validatorService.validate(file);
             } catch (IOException e) {
                 //TODO: Log stacktrace to file
-                redirectAttributes.addFlashAttribute("message", "Feil under streaming av fil.");
+                validationResult = ValidationResult.builder().valid(false).message(Message.VALIDATION_IO_ERROR.key()).result(e.getMessage()).build();
             }
-
-            redirectAttributes
-                    .addFlashAttribute("message", "Filen er lastet opp")
-                    .addFlashAttribute("showpanel", true)
-                    .addFlashAttribute("filename", file.getOriginalFilename());
         }
-
-        validator.validate(stream, redirectAttributes);
-        redirectAttributes.addFlashAttribute("file", file.getOriginalFilename() + " er validert");
+        redirectAttributes
+                .addFlashAttribute("showpanel", true)
+                .addFlashAttribute("validationResult", validationResult)
+                .addFlashAttribute("filename", file.getOriginalFilename());
 
         return "redirect:/";
     }

@@ -3,7 +3,7 @@ Build project with
 `mvn clean install`
 
 Application can be started with
-`java -jar target/metadata-validator-1.0.0-SNAPSHOT.jar`
+`java -jar target/metadata-validatorService-1.0.0-SNAPSHOT.jar`
 
 All spring boot parameters are available, use property server.port to override port the application is starting on. With default settings, you can call the application by pasting 
  `http://localhost:9000`

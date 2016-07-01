@@ -27,13 +27,13 @@
 
         <c:if test="${showpanel==true}">
             <div id="result-panel" class="panel">
-                <div class="panel-heading">Validert resultat <c:out value="${filename}"/></div>
+                <div class="panel-heading">Resultat av validiering av <c:out value="${filename}"/></div>
                 <div class="panel-body">
-                    <c:out value="${file}"/>
-                    <c:out value="${message}"/>
-                    <c:out value="${error}"/>
+                    <c:out value="${validationResult.result}"/>
                 </div>
-                <div class="panel-footer">Footer</div>
+                <div class="panel-footer">
+                    <c:out value="${validationResult.message}"/>
+                </div>
             </div>
         </c:if>
         <div class="footer">
