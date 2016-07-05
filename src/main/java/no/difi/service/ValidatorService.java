@@ -2,6 +2,8 @@ package no.difi.service;
 
 import no.difi.domain.Message;
 import no.difi.domain.ValidationResult;
+import org.opensaml.common.xml.SAMLSchemaBuilder;
+import org.opensaml.xml.parse.BasicParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -14,9 +16,13 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,19 +40,17 @@ public class ValidatorService {
     }
 
     public ValidationResult validate(final MultipartFile file) throws IOException {
-        final ValidationResult validationResult = validateXMLSyntax(file.getInputStream());
-        return validationResult.getValid() ? validateXMLSchema(file.getInputStream()) : validationResult;
+        String xml = org.apache.commons.io.IOUtils.toString(file.getInputStream(), "UTF-8");
+
+        final ValidationResult validationResult = validateXMLSyntax(xml);
+        return validationResult.getValid() ? validateXMLSchema(xml) : validationResult;
     }
 
-    private Resource[] getXsds() throws IOException {
-        return new PathMatchingResourcePatternResolver().getResources(RESOURCES);
-    }
-
-    private ValidationResult validateXMLSyntax(final InputStream stream) throws IOException {
+    private ValidationResult validateXMLSyntax(final String xml) throws IOException {
         final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
         try {
-            factory.newDocumentBuilder().parse(stream);
+            factory.newDocumentBuilder().parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
         } catch (ParserConfigurationException e) {
             //TODO: Log stacktrace to file
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_GENERAL_ERROR.key())).result(e.getMessage()).build();
@@ -56,37 +60,25 @@ public class ValidatorService {
         } catch (IOException e) {
             //TODO: Log stacktrace to file
             return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_IO_ERROR.key())).result(e.getMessage()).build();
-        } finally {
-            stream.close();
         }
         return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
     }
 
-    private ValidationResult validateXMLSchema(final InputStream stream) throws IOException {
-        final Resource[] xsdResources = getXsds();
-        final StreamSource[] xsds = generateStreamSourceFromXsdResources(xsdResources);
+    private ValidationResult validateXMLSchema(final String xml) throws IOException {
+        final StreamSource source = new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
 
-        final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
-            final javax.xml.validation.Validator validator = schemaFactory.newSchema(xsds).newValidator();
-            validator.validate(new StreamSource(stream));
+            final Schema schema = SAMLSchemaBuilder.getSAML11Schema();
+            org.opensaml.xml.parse.ParserPool parser = new BasicParserPool();
+            parser.setSchema(schema);
 
-            return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
-        } catch (SAXException ex) {
-            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XSD.key())).result(ex.getMessage()).build();
-        } finally {
-            stream.close();
-        }
-    }
+            final Validator validator = schema.newValidator();
+            validator.validate(source);
 
-    private StreamSource[] generateStreamSourceFromXsdResources(final Resource[] resources) throws IOException {
-        final List<String> xsds = Arrays.asList(environment.getRequiredProperty(METADATA_XSDS).split("\\s*,\\s*"));
-        final StreamSource[] sortedArray = new StreamSource[resources.length];
-
-        for (Resource resource : resources) {
-            sortedArray[xsds.indexOf(resource.getFilename())] = new StreamSource((resource.getInputStream()));
+        } catch (SAXException e) {
+            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XSD.key())).result(e.getMessage()).build();
         }
 
-        return sortedArray;
+        return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
     }
 }
