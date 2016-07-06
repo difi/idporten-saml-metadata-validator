@@ -1,6 +1,5 @@
 package no.difi.controller;
 
-import no.difi.CustomAsserts;
 import no.difi.config.MetadataConfig;
 import no.difi.domain.Message;
 import no.difi.domain.ValidationResult;
@@ -17,9 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 import static no.difi.CustomAsserts.*;
 import static no.difi.MockMultipartFiles.*;
-import static no.difi.domain.Message.VALIDATION_ERROR_XML;
-import static no.difi.domain.Message.VALIDATION_ERROR_XSD;
-import static no.difi.domain.Message.VALIDATION_OK_MESSAGE;
+import static no.difi.domain.Message.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -82,7 +79,7 @@ public class MetadataControllerIntegrationTest {
 
     @Test
     public void should_fail_with_validation_xsd_error_when_input_file_fails_xsd_validation() {
-        ValidationResult expected = ValidationResultObjectMother.createExpected(false, retrieveEnvironmentMessage(VALIDATION_ERROR_XSD));
+        ValidationResult expected = ValidationResultObjectMother.createExpected(false, retrieveEnvironmentMessage(VALIDATION_FAILED));
 
         metadataController.handleFileUpload(new MockMultipartFile("test", createMetafileStringWithExtraInvalidTag().getBytes()), redirectAttributes);
         ValidationResult actual = (ValidationResult) redirectAttributes.getFlashAttributes().get("validationResult");

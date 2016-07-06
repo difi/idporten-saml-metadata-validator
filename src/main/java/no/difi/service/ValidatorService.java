@@ -1,30 +1,26 @@
 package no.difi.service;
 
+import no.difi.domain.DetailsStatus;
 import no.difi.domain.Message;
 import no.difi.domain.ValidationResult;
 import org.opensaml.common.xml.SAMLSchemaBuilder;
 import org.opensaml.xml.parse.BasicParserPool;
+import org.opensaml.xml.parse.XMLParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class ValidatorService {
@@ -42,8 +38,9 @@ public class ValidatorService {
     public ValidationResult validate(final MultipartFile file) throws IOException {
         String xml = org.apache.commons.io.IOUtils.toString(file.getInputStream(), "UTF-8");
 
-        final ValidationResult validationResult = validateXMLSyntax(xml);
-        return validationResult.getValid() ? validateXMLSchema(xml) : validationResult;
+        ValidationResult validationResult = validateXMLSyntax(xml);
+        validationResult = validationResult.getValid() ? validateXMLSchema(xml) : validationResult;
+        return validationResult;
     }
 
     private ValidationResult validateXMLSyntax(final String xml) throws IOException {
@@ -66,19 +63,50 @@ public class ValidatorService {
 
     private ValidationResult validateXMLSchema(final String xml) throws IOException {
         final StreamSource source = new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        ValidationResult.Builder validationResult = ValidationResult.builder();
+        boolean isValid = true;
 
         try {
             final Schema schema = SAMLSchemaBuilder.getSAML11Schema();
-            org.opensaml.xml.parse.ParserPool parser = new BasicParserPool();
-            parser.setSchema(schema);
+            final BasicParserPool parserPool = new BasicParserPool();
+            parserPool.setNamespaceAware(true);
+            parserPool.setSchema(schema);
 
-            final Validator validator = schema.newValidator();
-            validator.validate(source);
+            final Document doc = parserPool.parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+            final Element element = doc.getDocumentElement();
+            final String entityID = element.getAttributes().getNamedItem("entityID").getNodeValue();
+            if (entityID.isEmpty() || entityID.equals("null")) {
+                isValid = false;
+                validationResult.details(environment.getRequiredProperty(DetailsStatus.MISSING_ENTITY.key()));
+            }
+
+
+            schema.newValidator().validate(source);
 
         } catch (SAXException e) {
-            return ValidationResult.builder().valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XSD.key())).result(e.getMessage()).build();
+            return validationResult.valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XSD.key())).result(e.getMessage()).build();
+        } catch (XMLParserException e) {
+            if (!xml.contains("LogoutService")) {
+                validationResult.details(environment.getRequiredProperty(DetailsStatus.MISSING_LOGOUT_URL.key()));
+            }
+            if (!xml.contains("AssertionConsumerService")) {
+                validationResult.details(environment.getRequiredProperty(DetailsStatus.MISSING_ASSERTION_CONSUMER_URL.key()));
+            }
+            return validationResult.valid(false).message(environment.getRequiredProperty(Message.VALIDATION_FAILED.key())).result(e.getMessage()).build();
         }
 
-        return ValidationResult.builder().valid(true).message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key())).result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key())).build();
+        if (isValid) {
+            return validationResult
+                    .valid(true)
+                    .message(environment.getRequiredProperty(Message.VALIDATION_OK_MESSAGE.key()))
+                    .result(environment.getRequiredProperty(Message.VALIDATION_OK_RESULT.key()))
+                    .build();
+        }
+        else {
+            return validationResult
+                    .valid(false)
+                    .message(environment.getRequiredProperty(Message.VALIDATION_FAILED.key()))
+                    .build();
+        }
     }
 }

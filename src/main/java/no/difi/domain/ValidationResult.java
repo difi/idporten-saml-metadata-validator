@@ -1,15 +1,23 @@
 package no.difi.domain;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class ValidationResult {
     private boolean valid;
     private String message;
     private String result;
+    private List<String> details;
 
-    private ValidationResult(boolean valid, String message, String result){
+    private ValidationResult(boolean valid, String message, Set<String> details, String result){
         this.valid = valid;
         this.message = message;
         this.result = result;
+        this.details = new ArrayList<>();
+        this.details.addAll(details);
     }
 
     public boolean getValid(){
@@ -24,22 +32,32 @@ public class ValidationResult {
         return result == null ? "" : result;
     }
 
+    public ArrayList<String> getDetails() {
+        return new ArrayList<>(details);
+    }
+
     public static Builder builder(){
         return new Builder();
     }
 
     public static class Builder {
         private boolean valid;
-        private String message;
+        private String response;
         private String result;
+        private Set<String> details = new HashSet<>();
 
         public Builder valid(final boolean valid){
             this.valid = valid;
             return this;
         }
 
-        public Builder message(final String message){
-            this.message = message;
+        public Builder message(final String response){
+            this.response = response;
+            return this;
+        }
+
+        public Builder details(String details) {
+            this.details.add(details);
             return this;
         }
 
@@ -49,7 +67,7 @@ public class ValidationResult {
         }
 
         public ValidationResult build(){
-            return new ValidationResult(valid, message, result);
+            return new ValidationResult(valid, response, details, result);
         }
     }
 }

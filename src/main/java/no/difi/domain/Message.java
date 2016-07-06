@@ -3,6 +3,7 @@ package no.difi.domain;
 public enum Message {
     VALIDATION_OK_MESSAGE("validation.ok.message"),
     VALIDATION_OK_RESULT("validation.ok.result"),
+    VALIDATION_FAILED("validation.failed.message"),
     VALIDATION_ERROR_XML("validation.error.xml"),
     VALIDATION_ERROR_XSD("validation.error.xsd"),
     VALIDATION_GENERAL_ERROR("validation.general.error"),
