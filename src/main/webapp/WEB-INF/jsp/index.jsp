@@ -29,6 +29,12 @@
             <div id="result-panel" class="panel">
                 <div class="panel-heading">Resultat av validiering av <c:out value="${filename}"/></div>
                 <div class="panel-body">
+                    <c:forEach items="${validationResult.details}" var="detailList">
+                        <c:out value="${detailList.detail}"/>
+                        <c:out value="${detailList.status}"/>
+                    </c:forEach>
+                </div>
+                <div class="panel-body">
                     <c:out value="${validationResult.result}"/>
                 </div>
                 <div class="panel-footer">

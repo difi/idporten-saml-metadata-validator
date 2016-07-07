@@ -1,9 +1,7 @@
 package no.difi.service;
 
 import no.difi.config.MetadataConfig;
-import no.difi.domain.DetailsStatus;
-import no.difi.domain.Message;
-import no.difi.domain.ValidationResult;
+import no.difi.domain.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +13,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static no.difi.CustomAsserts.assertValidationResult;
 import static no.difi.MockMultipartFiles.*;
+import static no.difi.domain.Details.MISSING_ASSERTION_CONSUMER_URL;
+import static no.difi.domain.Details.MISSING_ENTITY;
+import static no.difi.domain.Details.MISSING_LOGOUT_URL;
+import static no.difi.domain.DetailsStatus.ERROR;
 import static no.difi.domain.Message.*;
 import static no.difi.objectmother.ValidationResultObjectMother.createExpected;
 import static org.junit.Assert.*;
@@ -83,7 +85,7 @@ public class ValidatorServiceTest {
     public void should_get_error_when_entity_id_is_missing_from_xml() throws Exception {
         ValidationResult expected = createExpected(false,
                 environment.getRequiredProperty(VALIDATION_FAILED.key()),
-                environment.getRequiredProperty(DetailsStatus.MISSING_ENTITY.key()));
+                DetailsMessage.builder().details(environment.getRequiredProperty(MISSING_ENTITY.key())).status(ERROR).build());
 
         final ValidationResult actual = validatorService.validate(createMultipartFileXml(null, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL));
 
@@ -94,7 +96,7 @@ public class ValidatorServiceTest {
     public void should_get_error_when_logout_url_is_missing_from_xml() throws Exception {
         ValidationResult expected = createExpected(false,
                 environment.getRequiredProperty(VALIDATION_FAILED.key()),
-                environment.getRequiredProperty(DetailsStatus.MISSING_LOGOUT_URL.key()));
+                DetailsMessage.builder().details(environment.getRequiredProperty(MISSING_LOGOUT_URL.key())).status(ERROR).build());
 
         final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, null, TEST_ASSERTION_CONSUMER_URL));
 
@@ -105,7 +107,7 @@ public class ValidatorServiceTest {
     public void should_get_error_when_assertion_consumer_url_is_missing_from_xml() throws Exception {
         ValidationResult expected = createExpected(false,
                 environment.getRequiredProperty(VALIDATION_FAILED.key()),
-                environment.getRequiredProperty(DetailsStatus.MISSING_ASSERTION_CONSUMER_URL.key()));
+                DetailsMessage.builder().details(environment.getRequiredProperty(MISSING_ASSERTION_CONSUMER_URL.key())).status(ERROR).build());
 
         final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, null));
 
@@ -121,16 +123,4 @@ public class ValidatorServiceTest {
     //TODO: Test where all is in order (done before, need to be expanded?)
 
     //TODO: Certificate test, warning on missing
-//    @Test
-//    public void should_get_warning_when_public_certificate_is_missing_from_xml() throws Exception {
-//        ValidationResult expected = createExpected(false,
-//                environment.getRequiredProperty(VALIDATION_FAILED.key()),
-//                environment.getRequiredProperty(DetailsStatus.MISSING_ENTITY.key()));
-//
-//        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, null, TEST_ASSERTION_CONSUMER_URL));
-//
-//        assertValidationResult(expected, actual);
-//    }
-
-
 }

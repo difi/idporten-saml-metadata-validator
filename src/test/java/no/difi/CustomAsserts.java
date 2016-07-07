@@ -14,10 +14,8 @@ public class CustomAsserts {
                 expected.getDetails().size() == actual.getDetails().size());
 
         for (int i = 0; i < expected.getDetails().size(); i++) {
-            final String expectedDetails = expected.getDetails().get(i);
-            final String actualDetails = actual.getDetails().get(i);
-            assertTrue(String.format("DetailsStatus at position %d not same, expected <%s> but was <%s>", i, expectedDetails, actualDetails),
-                    expectedDetails.equals(actualDetails));
+            assertEquals(expected.getDetails().get(i).getDetail(), actual.getDetails().get(i).getDetail());
+            assertEquals(expected.getDetails().get(i).getStatus(), actual.getDetails().get(i).getStatus());
         }
     }
 }

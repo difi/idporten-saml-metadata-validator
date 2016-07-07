@@ -10,9 +10,9 @@ public class ValidationResult {
     private boolean valid;
     private String message;
     private String result;
-    private List<String> details;
+    private List<DetailsMessage> details;
 
-    private ValidationResult(boolean valid, String message, Set<String> details, String result){
+    private ValidationResult(boolean valid, String message, Set<DetailsMessage> details, String result){
         this.valid = valid;
         this.message = message;
         this.result = result;
@@ -32,7 +32,7 @@ public class ValidationResult {
         return result == null ? "" : result;
     }
 
-    public ArrayList<String> getDetails() {
+    public ArrayList<DetailsMessage> getDetails() {
         return new ArrayList<>(details);
     }
 
@@ -44,7 +44,7 @@ public class ValidationResult {
         private boolean valid;
         private String response;
         private String result;
-        private Set<String> details = new HashSet<>();
+        private Set<DetailsMessage> details = new HashSet<>();
 
         public Builder valid(final boolean valid){
             this.valid = valid;
@@ -56,7 +56,7 @@ public class ValidationResult {
             return this;
         }
 
-        public Builder details(String details) {
+        public Builder details(DetailsMessage details) {
             this.details.add(details);
             return this;
         }

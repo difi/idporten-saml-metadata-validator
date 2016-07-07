@@ -1,8 +1,6 @@
 package no.difi.service;
 
-import no.difi.domain.DetailsStatus;
-import no.difi.domain.Message;
-import no.difi.domain.ValidationResult;
+import no.difi.domain.*;
 import org.opensaml.common.xml.SAMLSchemaBuilder;
 import org.opensaml.xml.parse.BasicParserPool;
 import org.opensaml.xml.parse.XMLParserException;
@@ -21,6 +19,8 @@ import javax.xml.validation.Schema;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import static no.difi.domain.DetailsStatus.ERROR;
 
 @Service
 public class ValidatorService {
@@ -77,7 +77,8 @@ public class ValidatorService {
             final String entityID = element.getAttributes().getNamedItem("entityID").getNodeValue();
             if (entityID.isEmpty() || entityID.equals("null")) {
                 isValid = false;
-                validationResult.details(environment.getRequiredProperty(DetailsStatus.MISSING_ENTITY.key()));
+                validationResult.details(
+                        DetailsMessage.builder().details(environment.getRequiredProperty(Details.MISSING_ENTITY.key())).status(ERROR).build());
             }
 
 
@@ -87,10 +88,12 @@ public class ValidatorService {
             return validationResult.valid(false).message(environment.getRequiredProperty(Message.VALIDATION_ERROR_XSD.key())).result(e.getMessage()).build();
         } catch (XMLParserException e) {
             if (!xml.contains("LogoutService")) {
-                validationResult.details(environment.getRequiredProperty(DetailsStatus.MISSING_LOGOUT_URL.key()));
+                validationResult.details(
+                        DetailsMessage.builder().details(environment.getRequiredProperty(Details.MISSING_LOGOUT_URL.key())).status(ERROR).build());
             }
             if (!xml.contains("AssertionConsumerService")) {
-                validationResult.details(environment.getRequiredProperty(DetailsStatus.MISSING_ASSERTION_CONSUMER_URL.key()));
+                validationResult.details(
+                        DetailsMessage.builder().details(environment.getRequiredProperty(Details.MISSING_ASSERTION_CONSUMER_URL.key())).status(ERROR).build());
             }
             return validationResult.valid(false).message(environment.getRequiredProperty(Message.VALIDATION_FAILED.key())).result(e.getMessage()).build();
         }
