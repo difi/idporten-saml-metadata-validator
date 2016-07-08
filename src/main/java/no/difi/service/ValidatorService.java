@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static no.difi.domain.DetailsStatus.ERROR;
+import static no.difi.domain.DetailsStatus.INFO;
 
 @Service
 public class ValidatorService {
@@ -146,7 +147,10 @@ public class ValidatorService {
             return validationResult.valid(false).details(
                     DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.entityid")).status(ERROR).build());
         }
-        return validationResult;
+        else {
+            return validationResult.details(
+                    DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.valid.entityid")).status(INFO).build());
+        }
     }
 
     private String getElementAttributeValue(Document document, String element, String attribute) {

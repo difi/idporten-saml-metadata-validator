@@ -92,6 +92,17 @@ public class ValidatorServiceTest {
     }
 
     @Test
+    public void should_get_info_when_entity_id_is_ok() throws Exception {
+        ValidationResult expected = createExpected(true,
+                environment.getRequiredProperty(VALIDATION_OK_MESSAGE.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.valid.entityid")).status(INFO).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
     public void should_get_error_when_logout_url_is_missing_from_xml() throws Exception {
         ValidationResult expected = createExpected(false,
                 environment.getRequiredProperty(VALIDATION_FAILED.key()),
@@ -248,10 +259,4 @@ public class ValidatorServiceTest {
 
         assertValidationResult(expected, actual);
     }
-
-    //TODO: Check with multiple errors
-    //TODO: Check with combination of warnings and errors
-    //TODO: Test where all is in order (done before, need to be expanded?)
-
-    //TODO: Certificate test, warning on missing
 }
