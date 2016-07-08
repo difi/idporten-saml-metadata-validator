@@ -13,10 +13,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static no.difi.CustomAsserts.assertValidationResult;
 import static no.difi.MockMultipartFiles.*;
-import static no.difi.domain.Details.MISSING_ASSERTION_CONSUMER_URL;
-import static no.difi.domain.Details.MISSING_ENTITY;
-import static no.difi.domain.Details.MISSING_LOGOUT_URL;
 import static no.difi.domain.DetailsStatus.ERROR;
+import static no.difi.domain.DetailsStatus.INFO;
+import static no.difi.domain.DetailsStatus.WARNING;
 import static no.difi.domain.Message.*;
 import static no.difi.objectmother.ValidationResultObjectMother.createExpected;
 import static org.junit.Assert.*;
@@ -57,7 +56,7 @@ public class ValidatorServiceTest {
     public void should_return_validation_ok_when_xsd_validates() throws Exception {
         ValidationResult expected = createExpected(true, environment.getRequiredProperty(VALIDATION_OK_MESSAGE.key()));
 
-        ValidationResult actual = validatorService.validate(new MockMultipartFile("test", createValidMultipartFileXml().getBytes()));
+        ValidationResult actual = validatorService.validate(new MockMultipartFile("test", createMultipartFileXml().getBytes()));
 
         assertValidationResult(expected, actual);
     }
@@ -85,7 +84,7 @@ public class ValidatorServiceTest {
     public void should_get_error_when_entity_id_is_missing_from_xml() throws Exception {
         ValidationResult expected = createExpected(false,
                 environment.getRequiredProperty(VALIDATION_FAILED.key()),
-                DetailsMessage.builder().details(environment.getRequiredProperty(MISSING_ENTITY.key())).status(ERROR).build());
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.entityid")).status(ERROR).build());
 
         final ValidationResult actual = validatorService.validate(createMultipartFileXml(null, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL));
 
@@ -96,7 +95,7 @@ public class ValidatorServiceTest {
     public void should_get_error_when_logout_url_is_missing_from_xml() throws Exception {
         ValidationResult expected = createExpected(false,
                 environment.getRequiredProperty(VALIDATION_FAILED.key()),
-                DetailsMessage.builder().details(environment.getRequiredProperty(MISSING_LOGOUT_URL.key())).status(ERROR).build());
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.logouturl")).status(ERROR).build());
 
         final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, null, TEST_ASSERTION_CONSUMER_URL));
 
@@ -107,19 +106,151 @@ public class ValidatorServiceTest {
     public void should_get_error_when_assertion_consumer_url_is_missing_from_xml() throws Exception {
         ValidationResult expected = createExpected(false,
                 environment.getRequiredProperty(VALIDATION_FAILED.key()),
-                DetailsMessage.builder().details(environment.getRequiredProperty(MISSING_ASSERTION_CONSUMER_URL.key())).status(ERROR).build());
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.assertionconsumerurl")).status(ERROR).build());
 
         final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, null));
 
         assertValidationResult(expected, actual);
     }
 
-    //TODO: Logout url http give warning
-    //TODO: Assertion consumer url http give warning
+    @Test
+    public void should_get_error_when_assertion_consumer_url_link_is_blank() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.assertionconsumerurl")).status(ERROR).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL_BLANK_LOCATION));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_error_when_assertion_consumer_url_link_does_not_contain_http_or_https() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.assertionconsumerurl")).status(ERROR).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL_BULLSHIT_LOCATION));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_warning_when_assertion_consumer_url_starts_with_http() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.http.assertionconsumerurl")).status(WARNING).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL_HTTP_LOCATION));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_info_when_assertion_consumer_url_starts_with_https() throws Exception {
+        ValidationResult expected = createExpected(true,
+                environment.getRequiredProperty(VALIDATION_OK_MESSAGE.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.https.assertionconsumerurl")).status(INFO).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_error_when_logout_location_is_blank() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.logouturl")).status(INFO).build()
+                );
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL_BLANK_LOCATION, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_error_when_logout_location_does_not_contain_http_or_https() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.logouturl")).status(INFO).build()
+        );
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL_BULLSHIT_LOCATION, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_warning_when_logout_starts_with_http() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.http.logouturl")).status(WARNING).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL_HTTP_LOCATION, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_info_when_logout_starts_with_https() throws Exception {
+        ValidationResult expected = createExpected(true,
+                environment.getRequiredProperty(VALIDATION_OK_MESSAGE.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.https.logouturl")).status(INFO).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_error_when_logout_response_location_is_blank() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.responselocationurl")).status(ERROR).build()
+        );
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL_BLANK_RESPONSE_LOCATION, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_error_when_logout_response_location_does_not_contain_http_or_https() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.missing.responselocationurl")).status(ERROR).build()
+        );
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL_BULLSHIT_RESPONSE_LOCATION, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_warning_when_logout_response_location_starts_with_http() throws Exception {
+        ValidationResult expected = createExpected(false,
+                environment.getRequiredProperty(VALIDATION_FAILED.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.http.responselocationurl")).status(WARNING).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL_HTTP_RESPONSE_LOCATION, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
+    @Test
+    public void should_get_info_when_logout_response_location_starts_with_https() throws Exception {
+        ValidationResult expected = createExpected(true,
+                environment.getRequiredProperty(VALIDATION_OK_MESSAGE.key()),
+                DetailsMessage.builder().details(environment.getRequiredProperty("validation.param.https.responselocationurl")).status(INFO).build());
+
+        final ValidationResult actual = validatorService.validate(createMultipartFileXml(TEST_ENTITY_ID, TEST_LOGOUT_URL, TEST_ASSERTION_CONSUMER_URL));
+
+        assertValidationResult(expected, actual);
+    }
+
     //TODO: Check with multiple errors
     //TODO: Check with combination of warnings and errors
-    //TODO: Logout url https ok
-    //TODO: Assertion consumer https ok
     //TODO: Test where all is in order (done before, need to be expanded?)
 
     //TODO: Certificate test, warning on missing

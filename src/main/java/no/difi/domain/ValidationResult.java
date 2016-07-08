@@ -41,7 +41,7 @@ public class ValidationResult {
     }
 
     public static class Builder {
-        private boolean valid;
+        private boolean valid = true;
         private String response;
         private String result;
         private Set<DetailsMessage> details = new HashSet<>();
@@ -64,6 +64,10 @@ public class ValidationResult {
         public Builder result(final String result){
             this.result = result;
             return this;
+        }
+
+        public boolean isValid() {
+            return valid;
         }
 
         public ValidationResult build(){

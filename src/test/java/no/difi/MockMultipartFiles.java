@@ -5,8 +5,17 @@ import org.springframework.mock.web.MockMultipartFile;
 public class MockMultipartFiles {
     private static String TEST_FILENAME = "test";
     public static String TEST_ENTITY_ID = "testsp";
-    public static String TEST_LOGOUT_URL = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"http://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
-    public static String TEST_ASSERTION_CONSUMER_URL = "<AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/assertionconsumer\"/>\n";
+    public static String TEST_LOGOUT_URL = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
+    public static String TEST_LOGOUT_URL_BLANK_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"\" ResponseLocation=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
+    public static String TEST_LOGOUT_URL_BULLSHIT_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"asdfasdf\" ResponseLocation=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
+    public static String TEST_LOGOUT_URL_HTTP_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
+    public static String TEST_LOGOUT_URL_BLANK_RESPONSE_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"\"/>\n";
+    public static String TEST_LOGOUT_URL_BULLSHIT_RESPONSE_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"asdfasdf\"/>\n";
+    public static String TEST_LOGOUT_URL_HTTP_RESPONSE_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"http://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
+    public static String TEST_ASSERTION_CONSUMER_URL = "<AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"https://eid-vag-opensso.difi.local:10001/testsp/assertionconsumer\"/>\n";
+    public static String TEST_ASSERTION_CONSUMER_URL_BLANK_LOCATION = "<AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"\"/>\n";
+    public static String TEST_ASSERTION_CONSUMER_URL_BULLSHIT_LOCATION = "<AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"adfsadf\"/>\n";
+    public static String TEST_ASSERTION_CONSUMER_URL_HTTP_LOCATION = "<AssertionConsumerService index=\"1\" isDefault=\"true\" Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact\" Location=\"http://eid-vag-opensso.difi.local:10001/testsp/assertionconsumer\"/>\n";
 
     public static String createNoneXml() {
         return "Not xml at all";
@@ -21,7 +30,7 @@ public class MockMultipartFiles {
     }
 
     public static MockMultipartFile createValidMultipartFileXml() throws Exception {
-        return new MockMultipartFile("test", createValidMetaFileFullScenario().getBytes());
+        return createMultipartFileXml();
     }
 
     public static MockMultipartFile createMultipartFileXml() throws Exception {
