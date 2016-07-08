@@ -24,6 +24,8 @@ import static no.difi.domain.DetailsStatus.INFO;
 
 @Service
 public class ValidatorService {
+    private static String extSchema = "/xml/difi-saml-schema-metadata-2.0.xsd";
+
     private final Environment environment;
 
     @Autowired
@@ -62,6 +64,7 @@ public class ValidatorService {
 
         try {
             final Schema schema = SAMLSchemaBuilder.getSAML11Schema();
+            SAMLSchemaBuilder.addExtensionSchema(extSchema);
 
             final BasicParserPool parserPool = new BasicParserPool();
             parserPool.setNamespaceAware(true);
