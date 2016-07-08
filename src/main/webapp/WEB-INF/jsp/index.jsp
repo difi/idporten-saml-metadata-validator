@@ -30,13 +30,14 @@
                 <div class="panel-heading">Resultat av validiering av <c:out value="${filename}"/></div>
                 <div class="panel-body">
                     <c:forEach items="${validationResult.details}" var="detailList">
-                        <c:out value="${detailList.detail}"/>
-                        <c:out value="${detailList.status}"/>
+                        <span class="<c:out value="${detailList.status}"/>"><c:out value="${detailList.detail}"/></span>
                     </c:forEach>
                 </div>
-                <div class="panel-body">
-                    <c:out value="${validationResult.result}"/>
-                </div>
+                <c:if test="not empty ${validationResult.result}">
+                    <div class="panel-body">
+                        <c:out value="${validationResult.result}"/>
+                    </div>
+                </c:if>
                 <div class="panel-footer">
                     <c:out value="${validationResult.message}"/>
                 </div>
