@@ -1,10 +1,11 @@
 stage 'Dev'
 node {
     checkout scm
-    if (env.BRANCH_NAME == 'develop') {
+    if (env.BRANCH_NAME == 'master') {
         sh 'mvn -T 1C clean'
         sh 'mvn -T 1C versions:set'
         sh 'mvn -T 1C package'
+        sh 'mvn scm:tag'
         sh 'mvn docker:build'
         sh 'mvn docker:push'
     }
