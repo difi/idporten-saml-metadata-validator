@@ -4,7 +4,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 public class MockMultipartFiles {
     private static String TEST_FILENAME = "test";
-    public static String TEST_ENTITY_ID = "https://evalg.stat.no/authf";
+    public static String TEST_ENTITY_ID = "testsp";
     public static String TEST_LOGOUT_URL = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutrequest\" ResponseLocation=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
     public static String TEST_LOGOUT_URL_BLANK_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"\" ResponseLocation=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
     public static String TEST_LOGOUT_URL_BULLSHIT_LOCATION = "<SingleLogoutService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect\" Location=\"asdfasdf\" ResponseLocation=\"https://eid-vag-opensso.difi.local:10001/testsp/logoutresponseconsumer\"/>\n";
