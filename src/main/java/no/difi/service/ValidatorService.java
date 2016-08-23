@@ -163,7 +163,7 @@ public class ValidatorService {
 
     private String getAttributeValue(Node acs, String attribute) {
         for (int i = 0; i < acs.getAttributes().getLength(); i++) {
-            if (acs.getAttributes().item(i).getNodeName().equals(attribute)) {
+            if (acs.getAttributes().item(i).getLocalName().equals(attribute)) {
                 return acs.getAttributes().item(i).getNodeValue();
             }
         }
@@ -172,15 +172,15 @@ public class ValidatorService {
 
     private Node getNode(Document doc, String nodeName) {
         final Node spssoDescriptor = doc.getDocumentElement().getFirstChild();
-        if (spssoDescriptor.getNodeName().equals("SPSSODescriptor")) {
+        if (spssoDescriptor.getLocalName().equals("SPSSODescriptor")) {
             Node node = spssoDescriptor.getFirstChild();
-            while (!node.getNodeName().equals(nodeName)) {
+            while (!node.getLocalName().equals(nodeName)) {
                 node = node.getNextSibling();
                 if (node == null) {
                     return null;
                 }
             }
-            return node.getNodeName().equals(nodeName) ? node : null;
+            return node.getLocalName().equals(nodeName) ? node : null;
         }
         return null;
     }
