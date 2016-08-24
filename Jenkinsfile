@@ -9,8 +9,8 @@ node {
         sh 'mvn docker:push'
     }
     else {
-        sh 'mvn -T 1C clean -Pall'
-        sh 'mvn -T 1C compile -Pall'
-        sh 'mvn -T 1C test -Pall'
+        sh 'mvn -T 1C clean'
+        sh 'mvn -T 1C compile'
+        sh 'mvn -T 1C test'
     }
 }
