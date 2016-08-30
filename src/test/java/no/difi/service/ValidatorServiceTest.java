@@ -76,6 +76,11 @@ public class ValidatorServiceTest {
     }
 
     @Test
+    public void should_accept_valid_metafile_with_namespace() throws Exception {
+        assertEquals(environment.getProperty(VALIDATION_OK_RESULT.key()), validatorService.validate(createValidMetafileWithNamespace()).getResult());
+    }
+
+    @Test
     public void should_write_error_result_when_file_does_not_validate_against_xsd() throws Exception {
         assertNotEquals(environment.getProperty(Message.VALIDATION_OK_RESULT.key()), validatorService.validate(createMetaFileWithInvalidTag()).getResult());
     }
