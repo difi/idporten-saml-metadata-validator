@@ -26,7 +26,7 @@
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <java.version>1.8</java.version>
-        <docker.image.prefix>docker-registry.dmz.local</docker.image.prefix>
+        <docker.image.prefix>docker.io/difi</docker.image.prefix>
     </properties>
 
     <dependencies>
@@ -152,7 +152,7 @@
                             </build>
                             <run>
                                 <ports>
-                                    <port>9000:9000</port>
+                                    <port>service.port:8080</port>
                                 </ports>
                             </run>
                         </image>
