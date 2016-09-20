@@ -6,6 +6,7 @@ node {
         sh 'mvn -T 1C versions:set'
         sh 'mvn -T 1C package'
         sh 'mvn docker:build'
+        sh 'mvn scm:tag'
         sh 'mvn docker:push'
     }
     else {
