@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableList;
 import no.difi.config.LocalisationConfig;
 import no.difi.config.MetadataConfig;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.PropertySource;
 
-@SpringBootApplication
 public class Application {
     public static final String ROOT=System.getProperty("user.dir");
 
