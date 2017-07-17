@@ -45,6 +45,16 @@
     border-radius: 6px;
 }
 
+.language-selector {
+    text-align: right;
+}
+
+.language-selector img {
+    vertical-align: bottom;
+    height: 18px;
+    width: 18px;
+}
+
 .form-block {
     width: 100%;
     padding: 15px 0 15px 20px;

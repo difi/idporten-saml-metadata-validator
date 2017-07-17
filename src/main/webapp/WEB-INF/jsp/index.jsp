@@ -2,6 +2,16 @@
 <%@ include file="frags/top.jspf" %>
 
 <body>
+    <div class="language-selector">
+        <%-- used in accordance with http://fontawesome.io/license/ --%>
+        <img src="/images/font-awesome-language.svg">
+        <span><fmt:message key="validation.top.changelang" /></span>:
+        <select id="locales" onchange="setLocale(this.value)" >
+            <option value=""></option>
+            <option value="no">Norsk</option>
+            <option value="en">English</option>
+        </select>
+    </div>
 <div id="wrapper">
     <div class="container">
         <div class="page-header header-frame">
