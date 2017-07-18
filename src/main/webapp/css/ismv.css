@@ -146,17 +146,17 @@
 }
 
 .INFO {
-    color: #006400;
+    color: #090;
     display: block;
 }
 
 .WARNING {
-    color: #998800;
+    color: #c80;
     display: block;
 }
 
 .ERROR {
-    color: #8b0000;
+    color: #b00;
     display: block;
 }
 
