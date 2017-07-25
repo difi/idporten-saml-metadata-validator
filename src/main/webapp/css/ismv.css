@@ -45,6 +45,16 @@
     border-radius: 6px;
 }
 
+.language-selector {
+    text-align: right;
+}
+
+.language-selector img {
+    vertical-align: bottom;
+    height: 18px;
+    width: 18px;
+}
+
 .form-block {
     width: 100%;
     padding: 15px 0 15px 20px;
@@ -121,7 +131,6 @@
     margin-bottom: 0;
     font-weight: 400;
     font-size: 14px;
-    width: 60px;
     height: 18px;
     float: left;
     line-height: 1.4;
@@ -137,17 +146,17 @@
 }
 
 .INFO {
-    color: #006400;
+    color: #090;
     display: block;
 }
 
 .WARNING {
-    color: #998800;
+    color: #c80;
     display: block;
 }
 
 .ERROR {
-    color: #8b0000;
+    color: #b00;
     display: block;
 }
 

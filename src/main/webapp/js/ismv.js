@@ -14,3 +14,12 @@ function setFilename() {
     filename.fadeTo(1000, 1);
     $('#validate').removeAttr('disabled').removeClass('button-disabled');
 }
+
+/**
+ * Set Locale cookie and reload page.
+ */
+function setLocale(locale) {
+    locale = locale || "";
+    document.cookie='VALIDATOR_LOCALE=' + locale;
+    location.reload();
+}
